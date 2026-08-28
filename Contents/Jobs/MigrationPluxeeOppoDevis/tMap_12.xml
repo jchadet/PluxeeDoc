@@ -1,0 +1,143 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<externalNode i18n.job.component.parameters="Param&#232;tres du composant :" i18n.job.properties="Propri&#233;t&#233;s" i18n.job.values="Valeurs" i18n.mapper.table.for="Table de mapping de " i18n.mapper.table.properties="Propri&#233;t&#233;s de la table de mapping" i18n.job.name="Nom" i18n.tmap.matching.mode="Mode de rapprochement" i18n.mapper.table.isminimized="isMinimized" i18n.tmap.isreject="isReject" i18n.tmap.isrejectinnnerjoin="isRejectInnerJoin" i18n.tmap.isinnerjoin="isInnerJoin" i18n.tmap.expressionfilter="expressionFilter" i18n.mapper.table.metadata.entries="Entr&#233;es d'une table de m&#233;tadonn&#233;es" i18n.job.type="Type" i18n.mapper.table.expression="Expression" i18n.tmap.isnullable="isNullable" i18n.tmap.constraint.entries="Contrainte d'entr&#233;es de table" name="tMap_12" preview="pictures/_UJv0QJfHEfGJO-MzfhXMkQ-tMap_12-PREVIEW.bmp">
+  <parameters>
+    <column name="Statistiques du tStatCatcher">false</column>
+    <column name="Les liens de mapping s'affichent comme&#160;:">AUTO</column>
+    <column name="Chemin du r&#233;pertoire des donn&#233;es temporaires :"></column>
+    <column name="Taille maximale de la m&#233;moire tampon (nombre de lignes) :">2000000</column>
+    <column name="Ignorer les z&#233;ros de fin pour BigDecimal">true</column>
+    <column name="Afficher les informations">false</column>
+    <column name="Commentaire"><![CDATA[]]></column>
+    <column name="Utiliser une r&#232;gle de validation existante">false</column>
+  </parameters>
+  <mapperTable type="input">
+    <table name="pluxee_implementation" matching-mode="UNIQUE_MATCH" lookup-mode="LOAD_ONCE" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="Id" type="String" expression="" isNullable="false"/>
+        <entry name="OwnerId" type="String" expression="" isNullable="false"/>
+        <entry name="IsDeleted" type="boolean" expression="" isNullable="false"/>
+        <entry name="Name" type="String" expression="" isNullable="true"/>
+        <entry name="RecordTypeId" type="String" expression="" isNullable="true"/>
+        <entry name="CreatedDate" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="CreatedById" type="String" expression="" isNullable="false"/>
+        <entry name="LastModifiedDate" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="LastModifiedById" type="String" expression="" isNullable="false"/>
+        <entry name="SystemModstamp" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="LastActivityDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="LastViewedDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="LastReferencedDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Achat__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Activer_Billetterie_et_BP__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Administrateur__c" type="String" expression="" isNullable="true"/>
+        <entry name="Adresse_complete_CSE__c" type="String" expression="" isNullable="true"/>
+        <entry name="Arborescence__c" type="String" expression="" isNullable="true"/>
+        <entry name="Articles_Docs_Images_integrer__c" type="String" expression="" isNullable="true"/>
+        <entry name="Assistance_Juridique__c" type="String" expression="" isNullable="true"/>
+        <entry name="Avantages_parametres__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Ayants_droit__c" type="String" expression="" isNullable="true"/>
+        <entry name="Back_Up__c" type="String" expression="" isNullable="true"/>
+        <entry name="Billetterie_GoLive__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Billetterie__c" type="String" expression="" isNullable="true"/>
+        <entry name="Billetterie_ouverte__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="BonsPlans_GoLive__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Bons_Plans__c" type="String" expression="" isNullable="true"/>
+        <entry name="CGU_Uploaded__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Carnet_des_ASC__c" type="String" expression="" isNullable="true"/>
+        <entry name="Cartes_Cadeaux_Spirit_of_Cadeau__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Catalogue_Cadeaux_physiques__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Check_Mail_Tel_Adresse_Postale_CSE__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Checkbox_MissingContact__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Checklist_valid_e__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Cheques_Cadeaux_papier_Libert__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Cinema__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Cines_parcs_au_meme_endroits__c" type="String" expression="" isNullable="true"/>
+        <entry name="Code_Client_Saphir__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Code_couleur__c" type="String" expression="" isNullable="true"/>
+        <entry name="Coefficient_de_Ponderation_des_Points__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Commentaire_NPS_1__c" type="String" expression="" isNullable="true"/>
+        <entry name="Compta_GoLive__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Compta_RdvCadrageFormation__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Conditionnement__c" type="String" expression="" isNullable="true"/>
+        <entry name="Coupure_de_reference__c" type="String" expression="" isNullable="true"/>
+        <entry name="Date_de_Go_live__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Description_du_Jeu_d_Animation__c" type="String" expression="" isNullable="true"/>
+        <entry name="Directeur_de_la_publication__c" type="String" expression="" isNullable="true"/>
+        <entry name="Docs_legaux_inseres_sur_site__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Docs_legaux_transmis_au_CSE__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Duree_de_Validite_des_E_Cheques__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Duree_de_Validite_des_Points__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Espace_Bons_Plans_ouvert__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Etape_de_parametrage__c" type="String" expression="" isNullable="true"/>
+        <entry name="Frais_d_envoi_CC_Papier__c" type="String" expression="" isNullable="true"/>
+        <entry name="Frais_d_envoi_carte_SOC__c" type="String" expression="" isNullable="true"/>
+        <entry name="Gestion_GoLive__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Gestion_RdvCadrageFormation__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Gestion_des_membres__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Informations_Additionnelles__c" type="String" expression="" isNullable="true"/>
+        <entry name="Informations_Importees__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Inviter_les_salaries__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Jeu_d_animation__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Jeu_d_animation_p__c" type="String" expression="" isNullable="true"/>
+        <entry name="Kick_off__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Listing_salaries_LG__c" type="String" expression="" isNullable="true"/>
+        <entry name="Listing_salaries__c" type="String" expression="" isNullable="true"/>
+        <entry name="Listing_salaries_importe__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Logiciel_de_comptabilite__c" type="String" expression="" isNullable="true"/>
+        <entry name="Logiciel_de_gestion__c" type="String" expression="" isNullable="true"/>
+        <entry name="Logo__c" type="String" expression="" isNullable="true"/>
+        <entry name="Montant_HT_Frais_d_envoi_CC_Papier__c" type="Double" expression="" isNullable="true"/>
+        <entry name="NPS_externe_1__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Newsletter_Picklist__c" type="String" expression="" isNullable="true"/>
+        <entry name="Next_Step__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Niveau_de_comptabilite__c" type="String" expression="" isNullable="true"/>
+        <entry name="Nom_de_domaine_URL__c" type="String" expression="" isNullable="true"/>
+        <entry name="Nom_du_Client__c" type="String" expression="" isNullable="true"/>
+        <entry name="Nom_officiel_du_CSE__c" type="String" expression="" isNullable="true"/>
+        <entry name="NoteNextStep__c" type="String" expression="" isNullable="true"/>
+        <entry name="Opportunite__c" type="String" expression="" isNullable="false"/>
+        <entry name="Optionnel_Email_du_CSE__c" type="String" expression="" isNullable="true"/>
+        <entry name="Parcourir_les_pages_du_site_internet__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Personnalisation__c" type="String" expression="" isNullable="true"/>
+        <entry name="Plateforme_Personnalisee__c" type="String" expression="" isNullable="true"/>
+        <entry name="Pre_Page_de_Login__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="RDV_de_cadrage_et_de_formation_des_elus__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Reference_d_envoi__c" type="String" expression="" isNullable="true"/>
+        <entry name="Regles_Subvention__c" type="String" expression="" isNullable="true"/>
+        <entry name="Rubriques_ayant_droit_active__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Securisation_du_compte_Stripe__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Site_GoLive__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Site_Internet__c" type="String" expression="" isNullable="true"/>
+        <entry name="Site_Internet_cree__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Site_RdvCadrageFormation__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Site_internet_configure__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Soldes_AvantageEnCours__c" type="String" expression="" isNullable="true"/>
+        <entry name="StageClientLive_Date__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Suiveur_Sales__c" type="String" expression="" isNullable="true"/>
+        <entry name="Supprimer_pages_masquees_non_pertinentes__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Telephone_du_CSE__c" type="String" expression="" isNullable="true"/>
+        <entry name="Template_Lots_envoye__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Tester_les_boutons_de_redirection__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Type_d_Incentive__c" type="String" expression="" isNullable="true"/>
+        <entry name="Type_de_Facturation__c" type="String" expression="" isNullable="true"/>
+        <entry name="Type_de_dotation__c" type="String" expression="" isNullable="true"/>
+        <entry name="URL__c" type="String" expression="" isNullable="true"/>
+        <entry name="Verifier_absence_de_page_blanche__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Whitelisting__c" type="String" expression="" isNullable="true"/>
+        <entry name="SIRET__c" type="String" expression="" isNullable="true"/>
+        <entry name="IdGlady__c" type="String" expression="" isNullable="true"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+  <mapperTable type="output">
+    <table name="copyOfoppoOk" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="true" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="idGlady" type="String" expression="pluxee_implementation.IdGlady__c " isNullable="false"/>
+        <entry name="IdPluxee" type="String" expression="pluxee_implementation.Id " isNullable="false"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+  <mapperTable type="var">
+    <table name="Var" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="false" columnNameFilter="null"/>
+  </mapperTable>
+</externalNode>

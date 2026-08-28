@@ -1,0 +1,114 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<externalNode i18n.job.component.parameters="Param&#232;tres du composant :" i18n.job.properties="Propri&#233;t&#233;s" i18n.job.values="Valeurs" i18n.mapper.table.for="Table de mapping de " i18n.mapper.table.properties="Propri&#233;t&#233;s de la table de mapping" i18n.job.name="Nom" i18n.tmap.matching.mode="Mode de rapprochement" i18n.mapper.table.isminimized="isMinimized" i18n.tmap.isreject="isReject" i18n.tmap.isrejectinnnerjoin="isRejectInnerJoin" i18n.tmap.isinnerjoin="isInnerJoin" i18n.tmap.expressionfilter="expressionFilter" i18n.mapper.table.metadata.entries="Entr&#233;es d'une table de m&#233;tadonn&#233;es" i18n.job.type="Type" i18n.mapper.table.expression="Expression" i18n.tmap.isnullable="isNullable" i18n.tmap.constraint.entries="Contrainte d'entr&#233;es de table" name="tMap_7" preview="pictures/_UJv0QJfHEfGJO-MzfhXMkQ-tMap_7-PREVIEW.bmp">
+  <parameters>
+    <column name="Statistiques du tStatCatcher">false</column>
+    <column name="Les liens de mapping s'affichent comme&#160;:">AUTO</column>
+    <column name="Chemin du r&#233;pertoire des donn&#233;es temporaires :"></column>
+    <column name="Taille maximale de la m&#233;moire tampon (nombre de lignes) :">2000000</column>
+    <column name="Ignorer les z&#233;ros de fin pour BigDecimal">true</column>
+    <column name="Afficher les informations">false</column>
+    <column name="Commentaire"><![CDATA[]]></column>
+    <column name="Utiliser une r&#232;gle de validation existante">false</column>
+  </parameters>
+  <mapperTable type="input">
+    <table name="row6" matching-mode="UNIQUE_MATCH" lookup-mode="LOAD_ONCE" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="Id" type="String" expression="" isNullable="false"/>
+        <entry name="WhoId" type="String" expression="" isNullable="true"/>
+        <entry name="WhatId" type="String" expression="" isNullable="true"/>
+        <entry name="WhoCount" type="Integer" expression="" isNullable="true"/>
+        <entry name="WhatCount" type="Integer" expression="" isNullable="true"/>
+        <entry name="Subject" type="String" expression="" isNullable="true"/>
+        <entry name="Location" type="String" expression="" isNullable="true"/>
+        <entry name="IsAllDayEvent" type="boolean" expression="" isNullable="false"/>
+        <entry name="ActivityDateTime" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="ActivityDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="DurationInMinutes" type="Integer" expression="" isNullable="true"/>
+        <entry name="StartDateTime" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="EndDateTime" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Description" type="String" expression="" isNullable="true"/>
+        <entry name="AccountId" type="String" expression="" isNullable="true"/>
+        <entry name="OwnerId" type="String" expression="" isNullable="false"/>
+        <entry name="Type" type="String" expression="" isNullable="true"/>
+        <entry name="IsPrivate" type="boolean" expression="" isNullable="false"/>
+        <entry name="ShowAs" type="String" expression="" isNullable="true"/>
+        <entry name="GroupEventType" type="String" expression="" isNullable="true"/>
+        <entry name="CreatedDate" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="CreatedById" type="String" expression="" isNullable="false"/>
+        <entry name="LastModifiedDate" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="LastModifiedById" type="String" expression="" isNullable="false"/>
+        <entry name="SystemModstamp" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="IsVisibleInSelfService" type="boolean" expression="" isNullable="false"/>
+        <entry name="RecurrenceActivityId" type="String" expression="" isNullable="true"/>
+        <entry name="IsRecurrence" type="boolean" expression="" isNullable="false"/>
+        <entry name="RecurrenceStartDateTime" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="RecurrenceEndDateOnly" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="RecurrenceTimeZoneSidKey" type="String" expression="" isNullable="true"/>
+        <entry name="RecurrenceType" type="String" expression="" isNullable="true"/>
+        <entry name="RecurrenceInterval" type="Integer" expression="" isNullable="true"/>
+        <entry name="RecurrenceDayOfWeekMask" type="Integer" expression="" isNullable="true"/>
+        <entry name="RecurrenceDayOfMonth" type="Integer" expression="" isNullable="true"/>
+        <entry name="RecurrenceInstance" type="String" expression="" isNullable="true"/>
+        <entry name="RecurrenceMonthOfYear" type="String" expression="" isNullable="true"/>
+        <entry name="ReminderDateTime" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="IsReminderSet" type="boolean" expression="" isNullable="false"/>
+        <entry name="EventSubtype" type="String" expression="" isNullable="true"/>
+        <entry name="ID_Pivotal__c" type="String" expression="" isNullable="true"/>
+        <entry name="Motif__c" type="String" expression="" isNullable="true"/>
+        <entry name="Nature__c" type="String" expression="" isNullable="true"/>
+        <entry name="TECH_Activity_Assigned_to_Count__c" type="Double" expression="" isNullable="true"/>
+        <entry name="TECH_Nombre_d_activites__c" type="Double" expression="" isNullable="true"/>
+        <entry name="TECH_Nombre_de_mes_activites__c" type="Double" expression="" isNullable="true"/>
+        <entry name="RDV_effectue__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Category__c" type="String" expression="" isNullable="true"/>
+        <entry name="EventDone__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="LastDueDate__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="maps__BaseObjectId__c" type="String" expression="" isNullable="true"/>
+        <entry name="SPI_RE_Client_meeting__c" type="String" expression="" isNullable="true"/>
+        <entry name="maps__LayerId__c" type="String" expression="" isNullable="true"/>
+        <entry name="maps__WA_AdvRouteWaypoint__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Call_QueueName__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Interaction_Genesys__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_SVI_Motif__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_SVI_Produit__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_SVI_Reiteration__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_SVI_Type_contact__c" type="String" expression="" isNullable="true"/>
+        <entry name="Context__c" type="String" expression="" isNullable="true"/>
+        <entry name="PartnerMotif__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Call_Ani__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Call_ConversationId__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Call_State__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Interaction_AfterCallTime__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SoCare_Interaction_StartTime__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Interaction_TotalAcdTime__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SoCare_Interaction_TotalIvrTime__c" type="Double" expression="" isNullable="true"/>
+        <entry name="IdGlady__c" type="String" expression="" isNullable="true"/>
+        <entry name="errorCode" type="String" expression="" isNullable="false"/>
+        <entry name="errorFields" type="String" expression="" isNullable="false"/>
+        <entry name="errorMessage" type="String" expression="" isNullable="false"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+  <mapperTable type="output">
+    <table name="EventKo" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="true" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="errorCode" type="String" expression="row6.errorCode " isNullable="false"/>
+        <entry name="errorFields" type="String" expression="row6.errorFields " isNullable="false"/>
+        <entry name="errorMessage" type="String" expression="row6.errorMessage " isNullable="false"/>
+        <entry name="id_source" type="String" expression="Var.id_source " isNullable="false"/>
+        <entry name="salesforce_id" type="String" expression="Var.salesforce_id " isNullable="false"/>
+        <entry name="result" type="String" expression="Var.result " isNullable="false"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+  <mapperTable type="var">
+    <table name="Var" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="id_source" type="String" expression="row6.IdGlady__c " isNullable="false"/>
+        <entry name="salesforce_id" type="String" expression="row6.Id " isNullable="false"/>
+        <entry name="result" type="String" expression="&quot;failed&quot; " isNullable="false"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+</externalNode>

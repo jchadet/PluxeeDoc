@@ -1,0 +1,238 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<externalNode i18n.job.component.parameters="Param&#232;tres du composant :" i18n.job.properties="Propri&#233;t&#233;s" i18n.job.values="Valeurs" i18n.mapper.table.for="Table de mapping de " i18n.mapper.table.properties="Propri&#233;t&#233;s de la table de mapping" i18n.job.name="Nom" i18n.tmap.matching.mode="Mode de rapprochement" i18n.mapper.table.isminimized="isMinimized" i18n.tmap.isreject="isReject" i18n.tmap.isrejectinnnerjoin="isRejectInnerJoin" i18n.tmap.isinnerjoin="isInnerJoin" i18n.tmap.expressionfilter="expressionFilter" i18n.mapper.table.metadata.entries="Entr&#233;es d'une table de m&#233;tadonn&#233;es" i18n.job.type="Type" i18n.mapper.table.expression="Expression" i18n.tmap.isnullable="isNullable" i18n.tmap.constraint.entries="Contrainte d'entr&#233;es de table" name="tMap_4" preview="pictures/_UJv0QJfHEfGJO-MzfhXMkQ-tMap_4-PREVIEW.bmp">
+  <parameters>
+    <column name="Statistiques du tStatCatcher">false</column>
+    <column name="Les liens de mapping s'affichent comme&#160;:">AUTO</column>
+    <column name="Chemin du r&#233;pertoire des donn&#233;es temporaires :"></column>
+    <column name="Taille maximale de la m&#233;moire tampon (nombre de lignes) :">2000000</column>
+    <column name="Ignorer les z&#233;ros de fin pour BigDecimal">true</column>
+    <column name="Afficher les informations">false</column>
+    <column name="Commentaire"><![CDATA[]]></column>
+    <column name="Utiliser une r&#232;gle de validation existante">false</column>
+  </parameters>
+  <mapperTable type="input">
+    <table name="task" matching-mode="UNIQUE_MATCH" lookup-mode="LOAD_ONCE" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="true" columnNameFilter="las">
+      <metadataTableEntries>
+        <entry name="Id" type="String" expression="" isNullable="false"/>
+        <entry name="WhoId" type="String" expression="" isNullable="true"/>
+        <entry name="WhatId" type="String" expression="" isNullable="true"/>
+        <entry name="WhoCount" type="Integer" expression="" isNullable="true"/>
+        <entry name="WhatCount" type="Integer" expression="" isNullable="true"/>
+        <entry name="Subject" type="String" expression="" isNullable="true"/>
+        <entry name="ActivityDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Status" type="String" expression="" isNullable="false"/>
+        <entry name="Priority" type="String" expression="" isNullable="false"/>
+        <entry name="IsHighPriority" type="boolean" expression="" isNullable="false"/>
+        <entry name="OwnerId" type="String" expression="" isNullable="false"/>
+        <entry name="Description" type="String" expression="" isNullable="true"/>
+        <entry name="Type" type="String" expression="" isNullable="true"/>
+        <entry name="IsDeleted" type="boolean" expression="" isNullable="false"/>
+        <entry name="AccountId" type="String" expression="" isNullable="true"/>
+        <entry name="IsClosed" type="boolean" expression="" isNullable="false"/>
+        <entry name="CreatedDate" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="CreatedById" type="String" expression="" isNullable="false"/>
+        <entry name="LastModifiedDate" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="LastModifiedById" type="String" expression="" isNullable="false"/>
+        <entry name="SystemModstamp" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="IsArchived" type="boolean" expression="" isNullable="false"/>
+        <entry name="CallDurationInSeconds" type="Integer" expression="" isNullable="true"/>
+        <entry name="CallType" type="String" expression="" isNullable="true"/>
+        <entry name="CallDisposition" type="String" expression="" isNullable="true"/>
+        <entry name="CallObject" type="String" expression="" isNullable="true"/>
+        <entry name="ReminderDateTime" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="IsReminderSet" type="boolean" expression="" isNullable="false"/>
+        <entry name="RecurrenceActivityId" type="String" expression="" isNullable="true"/>
+        <entry name="IsRecurrence" type="boolean" expression="" isNullable="false"/>
+        <entry name="RecurrenceStartDateOnly" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="RecurrenceEndDateOnly" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="RecurrenceTimeZoneSidKey" type="String" expression="" isNullable="true"/>
+        <entry name="RecurrenceType" type="String" expression="" isNullable="true"/>
+        <entry name="RecurrenceInterval" type="Integer" expression="" isNullable="true"/>
+        <entry name="RecurrenceDayOfWeekMask" type="Integer" expression="" isNullable="true"/>
+        <entry name="RecurrenceDayOfMonth" type="Integer" expression="" isNullable="true"/>
+        <entry name="RecurrenceInstance" type="String" expression="" isNullable="true"/>
+        <entry name="RecurrenceMonthOfYear" type="String" expression="" isNullable="true"/>
+        <entry name="RecurrenceRegeneratedType" type="String" expression="" isNullable="true"/>
+        <entry name="TaskSubtype" type="String" expression="" isNullable="true"/>
+        <entry name="OutilDeVisio__c" type="String" expression="" isNullable="true"/>
+        <entry name="PlageHoraire__c" type="String" expression="" isNullable="true"/>
+        <entry name="RaisonAnnulation__c" type="String" expression="" isNullable="true"/>
+        <entry name="SousTypeEvenement__c" type="String" expression="" isNullable="true"/>
+        <entry name="Statut__c" type="String" expression="" isNullable="true"/>
+        <entry name="ExternalId__c" type="String" expression="" isNullable="true"/>
+        <entry name="NotesInternes__c" type="String" expression="" isNullable="true"/>
+        <entry name="Rappel__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Montant_associe__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="ID_18__c" type="String" expression="" isNullable="true"/>
+        <entry name="Unique_Activity_ID__c" type="String" expression="" isNullable="false"/>
+        <entry name="CreatedBy_Team__c" type="String" expression="" isNullable="true"/>
+        <entry name="Scoring_RDV_SDR__c" type="String" expression="" isNullable="true"/>
+        <entry name="CreatedBy_IsActive__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Owner_Team__c" type="String" expression="" isNullable="true"/>
+        <entry name="CSE_ProduitsConcernes__c" type="String" expression="" isNullable="true"/>
+        <entry name="STIM_ProduitsConcernes__c" type="String" expression="" isNullable="true"/>
+        <entry name="RH_ProduitsConcernes__c" type="String" expression="" isNullable="true"/>
+        <entry name="Binome_Sodexo__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Compte_Associe__c" type="String" expression="" isNullable="true"/>
+        <entry name="Scoring_Sales_Project__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Suiveur_Sales_project__c" type="String" expression="" isNullable="true"/>
+        <entry name="SuiveurSP_User__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="CSE_TypeProduitConcerne__c" type="String" expression="" isNullable="true"/>
+        <entry name="CreatedBy_User__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Attribu_User__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Re_plug_SDR__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Checkbox__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Sous_type__c" type="String" expression="" isNullable="true"/>
+        <entry name="Hour__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Minute__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Owner_current_user__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Numero_Semaine_Date_de_creation__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Numero_Semaine_Date__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Date_dash__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="CreatedBy_Manager__c" type="String" expression="" isNullable="true"/>
+        <entry name="CreatedBy_Role__c" type="String" expression="" isNullable="true"/>
+        <entry name="CreatedBy_Team_2__c" type="String" expression="" isNullable="true"/>
+        <entry name="Owner_Manager__c" type="String" expression="" isNullable="true"/>
+        <entry name="Owner_Role__c" type="String" expression="" isNullable="true"/>
+        <entry name="Owner_Team_2__c" type="String" expression="" isNullable="true"/>
+        <entry name="Lien_visio__c" type="String" expression="" isNullable="true"/>
+        <entry name="RaisonAnnulation_Precision__c" type="String" expression="" isNullable="true"/>
+        <entry name="Nb_jours_attente__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Coach_User__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Personnal_RDV__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Annee_Date_de_creation__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Mois_Date_de_creation__c" type="String" expression="" isNullable="true"/>
+        <entry name="Annee_Date__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Mois_Date__c" type="String" expression="" isNullable="true"/>
+        <entry name="Creator_Owner__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Createdby_team_user_team__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="aircall__Is_Missed_call__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="aircall__Is_Voicemail__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="aircall__Answered_by__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__CallId__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__Call_Recording__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__Country__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__Detailed_call_type__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__External_contact_phone_number__c" type="String" expression="" isNullable="true"/>
+        <entry name="Num_ro_Semaine_Date_r_alisation__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Owner_IsActive__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Mois_Date_de_r_alisation__c" type="String" expression="" isNullable="true"/>
+        <entry name="Ann_e_Date_de_r_alisation__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Booked_By_Name_CP__c" type="String" expression="" isNullable="true"/>
+        <entry name="Booked_By_Prospect_CP__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Canceled_CP__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Designated_Assignee_CP__c" type="String" expression="" isNullable="true"/>
+        <entry name="Meeting_Type_CP__c" type="String" expression="" isNullable="true"/>
+        <entry name="No_Show_CP__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Queue_Name_CP__c" type="String" expression="" isNullable="true"/>
+        <entry name="Rescheduled_CP__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Router_Name_CP__c" type="String" expression="" isNullable="true"/>
+        <entry name="WorkspaceName_CP__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__Handle_Time__c" type="Double" expression="" isNullable="true"/>
+        <entry name="aircall__Hour_in_time_zone__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__Made_By__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__Missed_Call_Reason__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__Number_Name__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__Phone_number__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__Time_zone__c" type="Double" expression="" isNullable="true"/>
+        <entry name="aircall__Transferred_to__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__Waiting_Time__c" type="Double" expression="" isNullable="true"/>
+        <entry name="aircall__Connection_status__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__Has_connected__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="ID_Zoho__c" type="String" expression="" isNullable="true"/>
+        <entry name="pipedrive_id__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall2gp__Aircall_Voice__c" type="String" expression="" isNullable="true"/>
+        <entry name="Plateforme_MC_avec_Sales_Project__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Assigned_equipe_r_f_rente__c" type="String" expression="" isNullable="true"/>
+        <entry name="Activity_type__c" type="String" expression="" isNullable="true"/>
+        <entry name="Batch_Growth__c" type="String" expression="" isNullable="true"/>
+        <entry name="Power_of_one__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Heure_de_cr_ation__c" type="String" expression="" isNullable="true"/>
+        <entry name="aircall__Aircall_AI__c" type="String" expression="" isNullable="true"/>
+      </metadataTableEntries>
+    </table>
+    <table name="Opp" matching-mode="UNIQUE_MATCH" lookup-mode="LOAD_ONCE" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="true" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="true" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="idGlady" type="String" expression="task.WhatId " isNullable="true"/>
+        <entry name="IdPluxee" type="String" expression="" isNullable="true"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+  <mapperTable type="output">
+    <table name="OppoTask" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="true" columnNameFilter="">
+      <metadataTableEntries>
+        <entry name="Id" type="String" expression="" isNullable="false"/>
+        <entry name="WhoId" type="String" expression="" isNullable="true"/>
+        <entry name="WhatId" type="String" expression="Opp.IdPluxee " isNullable="true"/>
+        <entry name="WhoCount" type="Integer" expression="" isNullable="true"/>
+        <entry name="WhatCount" type="Integer" expression="" isNullable="true"/>
+        <entry name="Subject" type="String" expression="task.Subject " isNullable="true"/>
+        <entry name="ActivityDate" type="java.util.Date" expression="task.ActivityDate " isNullable="true"/>
+        <entry name="Status" type="String" expression="PicklistMapper.translate(&quot;Task&quot;,&quot;Status&quot;,task.Status) " isNullable="false"/>
+        <entry name="Priority" type="String" expression="PicklistMapper.translate(&quot;Task&quot;,&quot;Priority&quot;,task.Priority) " isNullable="false"/>
+        <entry name="OwnerId" type="String" expression="" isNullable="false"/>
+        <entry name="Description" type="String" expression="task.Description " isNullable="true"/>
+        <entry name="Type" type="String" expression="" isNullable="true"/>
+        <entry name="CreatedDate" type="java.util.Date" expression="task.CreatedDate " isNullable="false"/>
+        <entry name="CreatedById" type="String" expression="" isNullable="false"/>
+        <entry name="LastModifiedDate" type="java.util.Date" expression="task.LastModifiedDate " isNullable="false"/>
+        <entry name="LastModifiedById" type="String" expression="" isNullable="false"/>
+        <entry name="SystemModstamp" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="IsVisibleInSelfService" type="boolean" expression="" isNullable="false"/>
+        <entry name="CallDurationInSeconds" type="Integer" expression="" isNullable="true"/>
+        <entry name="CallType" type="String" expression="" isNullable="true"/>
+        <entry name="CallDisposition" type="String" expression="" isNullable="true"/>
+        <entry name="CallObject" type="String" expression="" isNullable="true"/>
+        <entry name="ReminderDateTime" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="IsReminderSet" type="boolean" expression="" isNullable="false"/>
+        <entry name="RecurrenceActivityId" type="String" expression="" isNullable="true"/>
+        <entry name="IsRecurrence" type="boolean" expression="" isNullable="false"/>
+        <entry name="RecurrenceStartDateOnly" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="RecurrenceEndDateOnly" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="RecurrenceTimeZoneSidKey" type="String" expression="" isNullable="true"/>
+        <entry name="RecurrenceType" type="String" expression="" isNullable="true"/>
+        <entry name="RecurrenceInterval" type="Integer" expression="" isNullable="true"/>
+        <entry name="RecurrenceDayOfWeekMask" type="Integer" expression="" isNullable="true"/>
+        <entry name="RecurrenceDayOfMonth" type="Integer" expression="" isNullable="true"/>
+        <entry name="RecurrenceInstance" type="String" expression="" isNullable="true"/>
+        <entry name="RecurrenceMonthOfYear" type="String" expression="" isNullable="true"/>
+        <entry name="RecurrenceRegeneratedType" type="String" expression="" isNullable="true"/>
+        <entry name="TaskSubtype" type="String" expression="" isNullable="true"/>
+        <entry name="ID_Pivotal__c" type="String" expression="" isNullable="true"/>
+        <entry name="Motif__c" type="String" expression="" isNullable="true"/>
+        <entry name="Nature__c" type="String" expression="" isNullable="true"/>
+        <entry name="TECH_Activity_Assigned_to_Count__c" type="Double" expression="" isNullable="true"/>
+        <entry name="TECH_Nombre_d_activites__c" type="Double" expression="" isNullable="true"/>
+        <entry name="TECH_Nombre_de_mes_activites__c" type="Double" expression="" isNullable="true"/>
+        <entry name="RDV_effectue__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Category__c" type="String" expression="" isNullable="true"/>
+        <entry name="EventDone__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="LastDueDate__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="maps__BaseObjectId__c" type="String" expression="" isNullable="true"/>
+        <entry name="SPI_RE_Client_meeting__c" type="String" expression="" isNullable="true"/>
+        <entry name="maps__LayerId__c" type="String" expression="" isNullable="true"/>
+        <entry name="maps__WA_AdvRouteWaypoint__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Call_QueueName__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Interaction_Genesys__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_SVI_Motif__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_SVI_Produit__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_SVI_Reiteration__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_SVI_Type_contact__c" type="String" expression="" isNullable="true"/>
+        <entry name="Context__c" type="String" expression="" isNullable="true"/>
+        <entry name="PartnerMotif__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Call_Ani__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Call_ConversationId__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Call_State__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Interaction_AfterCallTime__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SoCare_Interaction_StartTime__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Interaction_TotalAcdTime__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SoCare_Interaction_TotalIvrTime__c" type="Double" expression="" isNullable="true"/>
+        <entry name="IdGlady__c" type="String" expression="task.Id " isNullable="true"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+  <mapperTable type="var">
+    <table name="Var" isMinimized="true" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="false" columnNameFilter="null"/>
+  </mapperTable>
+</externalNode>

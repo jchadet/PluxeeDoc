@@ -1,0 +1,267 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<externalNode i18n.job.component.parameters="Param&#232;tres du composant :" i18n.job.properties="Propri&#233;t&#233;s" i18n.job.values="Valeurs" i18n.mapper.table.for="Table de mapping de " i18n.mapper.table.properties="Propri&#233;t&#233;s de la table de mapping" i18n.job.name="Nom" i18n.tmap.matching.mode="Mode de rapprochement" i18n.mapper.table.isminimized="isMinimized" i18n.tmap.isreject="isReject" i18n.tmap.isrejectinnnerjoin="isRejectInnerJoin" i18n.tmap.isinnerjoin="isInnerJoin" i18n.tmap.expressionfilter="expressionFilter" i18n.mapper.table.metadata.entries="Entr&#233;es d'une table de m&#233;tadonn&#233;es" i18n.job.type="Type" i18n.mapper.table.expression="Expression" i18n.tmap.isnullable="isNullable" i18n.tmap.constraint.entries="Contrainte d'entr&#233;es de table" name="tMap_14" preview="pictures/_UJv0QJfHEfGJO-MzfhXMkQ-tMap_14-PREVIEW.bmp">
+  <parameters>
+    <column name="Statistiques du tStatCatcher">false</column>
+    <column name="Les liens de mapping s'affichent comme&#160;:">AUTO</column>
+    <column name="Chemin du r&#233;pertoire des donn&#233;es temporaires :"></column>
+    <column name="Taille maximale de la m&#233;moire tampon (nombre de lignes) :">2000000</column>
+    <column name="Ignorer les z&#233;ros de fin pour BigDecimal">true</column>
+    <column name="Afficher les informations">false</column>
+    <column name="Commentaire"><![CDATA[]]></column>
+    <column name="Utiliser une r&#232;gle de validation existante">false</column>
+  </parameters>
+  <mapperTable type="input">
+    <table name="row12" matching-mode="UNIQUE_MATCH" lookup-mode="LOAD_ONCE" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="Id" type="String" expression="" isNullable="false"/>
+        <entry name="OwnerId" type="String" expression="" isNullable="false"/>
+        <entry name="Name" type="String" expression="" isNullable="false"/>
+        <entry name="RecordTypeId" type="String" expression="" isNullable="true"/>
+        <entry name="CreatedDate" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="CreatedById" type="String" expression="" isNullable="false"/>
+        <entry name="LastModifiedDate" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="LastModifiedById" type="String" expression="" isNullable="false"/>
+        <entry name="SBQQ__Account__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__AdditionalDiscountAmount__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="SBQQ__AverageCustomerDiscount__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SBQQ__AveragePartnerDiscount__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SBQQ__BillingCity__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__BillingCountry__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__BillingFrequency__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__BillingName__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__BillingPostalCode__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__BillingState__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__BillingStreet__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__ContractingMethod__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__CustomerDiscount__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SBQQ__DaysQuoteOpen__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SBQQ__DefaultTemplate__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__DeliveryMethod__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__DistributorDiscount__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SBQQ__Distributor__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__DocumentStatus__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__EmailTemplateId__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__EndDate__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="SBQQ__ExpirationDate__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="SBQQ__FirstSegmentTermEndDate__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="SBQQ__GenerateContractedPrice__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__Introduction__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__Key__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__LineItemsGrouped__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="SBQQ__LineItemsPrinted__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="SBQQ__MarkupRate__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SBQQ__MasterContract__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__MasterEvergreenContract__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__Notes__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__Opportunity2__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__OrderByQuoteLineGroup__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="SBQQ__OrderBy__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__OrderGroupID__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__Ordered__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="SBQQ__OriginalQuote__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__PaperSize__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__PartnerDiscount__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SBQQ__Partner__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__PaymentTerms__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__PriceBook__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__PricebookId__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__PrimaryContact__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__Primary__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="SBQQ__QuoteLanguage__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__QuoteProcessId__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__QuoteTemplateId__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__RenewalTerm__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SBQQ__RenewalUpliftRate__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SBQQ__SalesRep__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__ShippingCity__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__ShippingCountry__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__ShippingName__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__ShippingPostalCode__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__ShippingState__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__ShippingStreet__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__Source__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__StartDate__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="SBQQ__Status__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__SubscriptionTerm__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SBQQ__TargetCustomerAmount__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="SBQQ__TotalCustomerDiscountAmount__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="SBQQ__Type__c" type="String" expression="" isNullable="true"/>
+        <entry name="SBQQ__Unopened__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="SBQQ__WatermarkShown__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="SBQQ__CustomerAmount__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="SBQQ__LineItemCount__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SBQQ__ListAmount__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="SBQQ__NetAmount__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="SBQQ__RegularAmount__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="SBQQ__LastCalculatedOn__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="SBQQ__LastSavedOn__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="SBQQ__Uncalculated__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Accorddeprincipeobtenu__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Adresse_de_facturation__c" type="String" expression="" isNullable="true"/>
+        <entry name="Adresse_de_livraison__c" type="String" expression="" isNullable="true"/>
+        <entry name="Adressedudestinataire__c" type="String" expression="" isNullable="true"/>
+        <entry name="Appro_delais_de_reglement__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Appro_mode_de_reglement__c" type="Double" expression="" isNullable="true"/>
+        <entry name="ApprovalStatus__c" type="String" expression="" isNullable="true"/>
+        <entry name="Business_Value__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Business_Value_quote__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="Business_Volume__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="Code_NAF__c" type="String" expression="" isNullable="true"/>
+        <entry name="Code_Produit_Opportunite__c" type="String" expression="" isNullable="true"/>
+        <entry name="CommentairesAccorddeprincipe__c" type="String" expression="" isNullable="true"/>
+        <entry name="Commentairespourapprobation__c" type="String" expression="" isNullable="true"/>
+        <entry name="Commercial_PDF__c" type="String" expression="" isNullable="true"/>
+        <entry name="Contract__c" type="String" expression="" isNullable="true"/>
+        <entry name="Contracte__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Contrat_n_go_LAB__c" type="String" expression="" isNullable="true"/>
+        <entry name="Contrat_n_go_LSC__c" type="String" expression="" isNullable="true"/>
+        <entry name="D_lais_de_r_glement__c" type="String" expression="" isNullable="true"/>
+        <entry name="D_tails_adresse_de_facturation__c" type="String" expression="" isNullable="true"/>
+        <entry name="D_tails_adresse_de_livraison__c" type="String" expression="" isNullable="true"/>
+        <entry name="Date_du_jour_PDF__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Delais_de_reglement_PDF__c" type="String" expression="" isNullable="true"/>
+        <entry name="Devis_cadeau__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Dotation_par_benficiaire__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="Dynamic_Approver__c" type="String" expression="" isNullable="true"/>
+        <entry name="EditLinesFieldSetName__c" type="String" expression="" isNullable="true"/>
+        <entry name="ID_Pivotal__c" type="String" expression="" isNullable="true"/>
+        <entry name="Image_Code_Barre__c" type="String" expression="" isNullable="true"/>
+        <entry name="Marge_BV__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Mode_de_r_glement__c" type="String" expression="" isNullable="true"/>
+        <entry name="Niveau_appro_global_reglement__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Nombre_de_beneficiaires__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Nombre_de_titres_beneficiaire__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Offre_Commande__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Account_name__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Adresse_de_Facturation_L1__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Adresse_de_facturation_L2__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Adresse_de_facturation_L3__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Adresse_de_livraison_L1__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Adresse_de_livraison_L2__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Adresse_de_livraison_L3__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Adresse_destinataire_L1__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Adresse_destinataire_L2__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Adresse_destinataire_L3__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_CAP__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="PDF_CC__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="PDF_CESU__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="PDF_CRC__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="PDF_CRP__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="PDF_CR_Mixte__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="PDF_ID_entreprise_du_compte__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_PMC__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="PDF_Primary_Contact_Email__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Primary_Contact_Fax__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Primary_Contact_Name__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Primary_Contact_Phone__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_Ref_client_remplie__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="PDF_SOCP__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="PDF_SOC__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="PS_BV__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Reference_client__c" type="String" expression="" isNullable="true"/>
+        <entry name="SIRET__c" type="String" expression="" isNullable="true"/>
+        <entry name="Seuil_Dero_DR_DV_PS__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Seuil_Dero_RD_PS__c" type="Double" expression="" isNullable="true"/>
+        <entry name="Statut_approbation_DAF__c" type="String" expression="" isNullable="true"/>
+        <entry name="SubmittedDate__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="TECH_Contract_ID__c" type="String" expression="" isNullable="true"/>
+        <entry name="TECH_Default_Condit__c" type="String" expression="" isNullable="true"/>
+        <entry name="TECH_Dynamic_Approver__c" type="String" expression="" isNullable="true"/>
+        <entry name="TECH_ExternalSystemId__c" type="String" expression="" isNullable="true"/>
+        <entry name="Tech_Default_Conditi__c" type="String" expression="" isNullable="true"/>
+        <entry name="Tranche_d_effectif__c" type="String" expression="" isNullable="true"/>
+        <entry name="ValeurFaciale__c" type="Double" expression="" isNullable="true"/>
+        <entry name="BaseHTProduits__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="Number_Of_Products__c" type="Double" expression="" isNullable="true"/>
+        <entry name="BVCalcule__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="Code_Produit_Guided_Selling__c" type="String" expression="" isNullable="true"/>
+        <entry name="Devis_restau__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="PDF_Label_delai_reglement__c" type="String" expression="" isNullable="true"/>
+        <entry name="CodeclientBO__c" type="String" expression="" isNullable="true"/>
+        <entry name="Minimumdefacturation__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="PDF_CRPBV__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="ContactDeFacturation__c" type="String" expression="" isNullable="true"/>
+        <entry name="ContactDeLivraison__c" type="String" expression="" isNullable="true"/>
+        <entry name="Createdbyweb__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="DevisRecurrent__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Devisdorigine__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="DtaildelerreurBO__c" type="String" expression="" isNullable="true"/>
+        <entry name="StatutBO__c" type="String" expression="" isNullable="true"/>
+        <entry name="Facture_Chorus__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="BenefsQuotelines__c" type="Double" expression="" isNullable="true"/>
+        <entry name="TECH_Source__c" type="String" expression="" isNullable="true"/>
+        <entry name="DesiredDeliveryDate__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="CongaDocumentDate__c" type="String" expression="" isNullable="true"/>
+        <entry name="DAFApprovalComment__c" type="String" expression="" isNullable="true"/>
+        <entry name="PeriodePromotionnelleMois__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SalesPromotion__c" type="String" expression="" isNullable="true"/>
+        <entry name="TECH_BypassProcessBuilder__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="CongaPrimaryContact__c" type="String" expression="" isNullable="true"/>
+        <entry name="Segment__c" type="String" expression="" isNullable="true"/>
+        <entry name="TECHByPassFinanceApproval__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="TECHIsBackToDraftInProgress__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="TECH_AcceptRefuseQuote__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="PDFSPIRIT__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="PDFPaymentMethod__c" type="String" expression="" isNullable="true"/>
+        <entry name="PromotionCode__c" type="String" expression="" isNullable="true"/>
+        <entry name="PDF_NotMealQuote__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="FlowId__c" type="String" expression="" isNullable="true"/>
+        <entry name="TechQuoteToClone__c" type="String" expression="" isNullable="true"/>
+        <entry name="Tech_HasRCSOPRATIC__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Tech_Initial_HasRCSOPRATIC__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Budget_estime__c" type="BigDecimal" expression="" isNullable="true"/>
+        <entry name="CountToqla__c" type="Double" expression="" isNullable="true"/>
+        <entry name="PDF_MOBILITE__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Toqla__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="ApprovalReasons__c" type="String" expression="" isNullable="true"/>
+        <entry name="AnneeVersementRFA__c" type="String" expression="" isNullable="true"/>
+        <entry name="CommentairesApprobationRFA__c" type="String" expression="" isNullable="true"/>
+        <entry name="CountRFA__c" type="Double" expression="" isNullable="true"/>
+        <entry name="FirstRFAPaymentDate__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="FrequenceVersementRFA__c" type="String" expression="" isNullable="true"/>
+        <entry name="MoisVersementRFA__c" type="String" expression="" isNullable="true"/>
+        <entry name="MontantTauxRemiseRFA__c" type="String" expression="" isNullable="true"/>
+        <entry name="RFA__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="AcceptanceDate__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="EQuoteSendingDate__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="EQuoteValidityEndDate__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="EQuote__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="EdevisValidationInProgress__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="EquoteExpired__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="eQuoteLoadCount__c" type="Double" expression="" isNullable="true"/>
+        <entry name="EQuoteDaysUntilExpiration__c" type="Double" expression="" isNullable="true"/>
+        <entry name="EQuoteReminder1Date__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="EQuoteReminder2Date__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="NoEdevisValidationInProgress__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="CountSpirit__c" type="Double" expression="" isNullable="true"/>
+        <entry name="PDF_CRD__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="IdGlady__c" type="String" expression="" isNullable="true"/>
+        <entry name="errorCode" type="String" expression="" isNullable="false"/>
+        <entry name="errorFields" type="String" expression="" isNullable="false"/>
+        <entry name="errorMessage" type="String" expression="" isNullable="false"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+  <mapperTable type="output">
+    <table name="devisKo" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="true" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="errorCode" type="String" expression="row12.errorCode " isNullable="false"/>
+        <entry name="errorFields" type="String" expression="row12.errorFields " isNullable="false"/>
+        <entry name="errorMessage" type="String" expression="row12.errorMessage " isNullable="false"/>
+        <entry name="id_source" type="String" expression="Var.id_source " isNullable="false"/>
+        <entry name="salesforce_id" type="String" expression="Var.salesforce_id " isNullable="false"/>
+        <entry name="result" type="String" expression="Var.result " isNullable="false"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+  <mapperTable type="var">
+    <table name="Var" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="id_source" type="String" expression="row12.IdGlady__c " isNullable="false"/>
+        <entry name="salesforce_id" type="String" expression="row12.Id " isNullable="false"/>
+        <entry name="result" type="String" expression="&quot;failed&quot; " isNullable="false"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+</externalNode>

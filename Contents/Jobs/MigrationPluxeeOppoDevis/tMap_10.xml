@@ -1,0 +1,195 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<externalNode i18n.job.component.parameters="Param&#232;tres du composant :" i18n.job.properties="Propri&#233;t&#233;s" i18n.job.values="Valeurs" i18n.mapper.table.for="Table de mapping de " i18n.mapper.table.properties="Propri&#233;t&#233;s de la table de mapping" i18n.job.name="Nom" i18n.tmap.matching.mode="Mode de rapprochement" i18n.mapper.table.isminimized="isMinimized" i18n.tmap.isreject="isReject" i18n.tmap.isrejectinnnerjoin="isRejectInnerJoin" i18n.tmap.isinnerjoin="isInnerJoin" i18n.tmap.expressionfilter="expressionFilter" i18n.mapper.table.metadata.entries="Entr&#233;es d'une table de m&#233;tadonn&#233;es" i18n.job.type="Type" i18n.mapper.table.expression="Expression" i18n.tmap.isnullable="isNullable" i18n.tmap.constraint.entries="Contrainte d'entr&#233;es de table" name="tMap_10" preview="pictures/_UJv0QJfHEfGJO-MzfhXMkQ-tMap_10-PREVIEW.bmp">
+  <parameters>
+    <column name="Statistiques du tStatCatcher">false</column>
+    <column name="Les liens de mapping s'affichent comme&#160;:">AUTO</column>
+    <column name="Chemin du r&#233;pertoire des donn&#233;es temporaires :"></column>
+    <column name="Taille maximale de la m&#233;moire tampon (nombre de lignes) :">2000000</column>
+    <column name="Ignorer les z&#233;ros de fin pour BigDecimal">true</column>
+    <column name="Afficher les informations">false</column>
+    <column name="Commentaire"><![CDATA[]]></column>
+    <column name="Utiliser une r&#232;gle de validation existante">false</column>
+  </parameters>
+  <mapperTable type="input">
+    <table name="AssCtcImplem" matching-mode="UNIQUE_MATCH" lookup-mode="LOAD_ONCE" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="true" columnNameFilter="im">
+      <metadataTableEntries>
+        <entry name="Id" type="String" expression="" isNullable="false"/>
+        <entry name="IsDeleted" type="boolean" expression="" isNullable="false"/>
+        <entry name="Name" type="String" expression="" isNullable="false"/>
+        <entry name="CreatedDate" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="CreatedById" type="String" expression="" isNullable="false"/>
+        <entry name="LastModifiedDate" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="LastModifiedById" type="String" expression="" isNullable="false"/>
+        <entry name="SystemModstamp" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="LastActivityDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="LastViewedDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="LastReferencedDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Implementation__c" type="String" expression="" isNullable="false"/>
+        <entry name="Administrateur__c" type="String" expression="" isNullable="false"/>
+        <entry name="Acces_Logiciel_de_comptabilite__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Acces_Logiciel_de_gestion__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Acces_site_internet__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Adresse_e_mail__c" type="String" expression="" isNullable="true"/>
+        <entry name="ID_logiciel_de_comptabilite__c" type="String" expression="" isNullable="true"/>
+        <entry name="ID_logiciel_de_gestion__c" type="String" expression="" isNullable="true"/>
+        <entry name="ID_site__c" type="String" expression="" isNullable="true"/>
+        <entry name="MDP_temporaire_Logiciel_de_compta__c" type="String" expression="" isNullable="true"/>
+        <entry name="MDP_temporaire_Logiciel_de_gestion__c" type="String" expression="" isNullable="true"/>
+        <entry name="MDP_temporaire_Site_internet__c" type="String" expression="" isNullable="true"/>
+        <entry name="URL_du_logiciel_de_comptabilite__c" type="String" expression="" isNullable="true"/>
+        <entry name="URL_du_logiciel_de_gestion__c" type="String" expression="" isNullable="true"/>
+        <entry name="URL_site_internet__c" type="String" expression="" isNullable="true"/>
+        <entry name="Nom__c" type="String" expression="" isNullable="true"/>
+        <entry name="Pr_nom__c" type="String" expression="" isNullable="true"/>
+      </metadataTableEntries>
+    </table>
+    <table name="contact" matching-mode="UNIQUE_MATCH" lookup-mode="LOAD_ONCE" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="true" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="true" activateColumnNameFilter="true" columnNameFilter="id">
+      <metadataTableEntries>
+        <entry name="Id" type="String" expression="" isNullable="false"/>
+        <entry name="IsDeleted" type="boolean" expression="" isNullable="false"/>
+        <entry name="MasterRecordId" type="String" expression="" isNullable="true"/>
+        <entry name="AccountId" type="String" expression="" isNullable="true"/>
+        <entry name="LastName" type="String" expression="" isNullable="false"/>
+        <entry name="FirstName" type="String" expression="" isNullable="true"/>
+        <entry name="Salutation" type="String" expression="" isNullable="true"/>
+        <entry name="Name" type="String" expression="" isNullable="false"/>
+        <entry name="RecordTypeId" type="String" expression="" isNullable="true"/>
+        <entry name="OtherStreet" type="String" expression="" isNullable="true"/>
+        <entry name="OtherCity" type="String" expression="" isNullable="true"/>
+        <entry name="OtherState" type="String" expression="" isNullable="true"/>
+        <entry name="OtherPostalCode" type="String" expression="" isNullable="true"/>
+        <entry name="OtherCountry" type="String" expression="" isNullable="true"/>
+        <entry name="OtherLatitude" type="Double" expression="" isNullable="true"/>
+        <entry name="OtherLongitude" type="Double" expression="" isNullable="true"/>
+        <entry name="OtherGeocodeAccuracy" type="String" expression="" isNullable="true"/>
+        <entry name="OtherAddress" type="String" expression="" isNullable="true"/>
+        <entry name="MailingStreet" type="String" expression="" isNullable="true"/>
+        <entry name="MailingCity" type="String" expression="" isNullable="true"/>
+        <entry name="MailingState" type="String" expression="" isNullable="true"/>
+        <entry name="MailingPostalCode" type="String" expression="" isNullable="true"/>
+        <entry name="MailingCountry" type="String" expression="" isNullable="true"/>
+        <entry name="MailingLatitude" type="Double" expression="" isNullable="true"/>
+        <entry name="MailingLongitude" type="Double" expression="" isNullable="true"/>
+        <entry name="MailingGeocodeAccuracy" type="String" expression="" isNullable="true"/>
+        <entry name="MailingAddress" type="String" expression="" isNullable="true"/>
+        <entry name="Phone" type="String" expression="" isNullable="true"/>
+        <entry name="Fax" type="String" expression="" isNullable="true"/>
+        <entry name="MobilePhone" type="String" expression="" isNullable="true"/>
+        <entry name="HomePhone" type="String" expression="" isNullable="true"/>
+        <entry name="OtherPhone" type="String" expression="" isNullable="true"/>
+        <entry name="AssistantPhone" type="String" expression="" isNullable="true"/>
+        <entry name="ReportsToId" type="String" expression="" isNullable="true"/>
+        <entry name="Email" type="String" expression="" isNullable="true"/>
+        <entry name="Title" type="String" expression="" isNullable="true"/>
+        <entry name="Department" type="String" expression="" isNullable="true"/>
+        <entry name="AssistantName" type="String" expression="" isNullable="true"/>
+        <entry name="LeadSource" type="String" expression="" isNullable="true"/>
+        <entry name="Birthdate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Description" type="String" expression="" isNullable="true"/>
+        <entry name="OwnerId" type="String" expression="" isNullable="false"/>
+        <entry name="HasOptedOutOfEmail" type="boolean" expression="" isNullable="false"/>
+        <entry name="HasOptedOutOfFax" type="boolean" expression="" isNullable="false"/>
+        <entry name="DoNotCall" type="boolean" expression="" isNullable="false"/>
+        <entry name="CreatedDate" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="CreatedById" type="String" expression="" isNullable="false"/>
+        <entry name="LastModifiedDate" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="LastModifiedById" type="String" expression="" isNullable="false"/>
+        <entry name="SystemModstamp" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="LastActivityDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="LastCURequestDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="LastCUUpdateDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="LastViewedDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="LastReferencedDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="EmailBouncedReason" type="String" expression="" isNullable="true"/>
+        <entry name="EmailBouncedDate" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="IsEmailBounced" type="boolean" expression="" isNullable="false"/>
+        <entry name="PhotoUrl" type="String" expression="" isNullable="true"/>
+        <entry name="Jigsaw" type="String" expression="" isNullable="true"/>
+        <entry name="JigsawContactId" type="String" expression="" isNullable="true"/>
+        <entry name="Commentaire_Affili__c" type="String" expression="" isNullable="true"/>
+        <entry name="Contact_de_mon_compte__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Contact_principal__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="Fonction__c" type="String" expression="" isNullable="true"/>
+        <entry name="Hard_bounce__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="ID_Pivotal__c" type="String" expression="" isNullable="true"/>
+        <entry name="Niveau_de_relation_Affili__c" type="String" expression="" isNullable="true"/>
+        <entry name="Niveau_relation__c" type="String" expression="" isNullable="true"/>
+        <entry name="TECH_ExternalSystemId__c" type="String" expression="" isNullable="true"/>
+        <entry name="Web_Access__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="EmailexternalId__c" type="String" expression="" isNullable="true"/>
+        <entry name="HardBounce__c" type="String" expression="" isNullable="true"/>
+        <entry name="Erreur_AcquittementError__c" type="String" expression="" isNullable="true"/>
+        <entry name="SPI_RE_Contact_level_satisfaction__c" type="String" expression="" isNullable="true"/>
+        <entry name="FonctionAffilie__c" type="String" expression="" isNullable="true"/>
+        <entry name="ContactType_Account__c" type="String" expression="" isNullable="true"/>
+        <entry name="RecordTypeDevName__c" type="String" expression="" isNullable="true"/>
+        <entry name="Contract__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Actif__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="SoCare_Carte_Restaurant__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Code_CESU__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SoCare_Code_Consumer_CM__c" type="Double" expression="" isNullable="true"/>
+        <entry name="SoCare_Email_Login__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Email_Personnel__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Libelle_matricule__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Mailing_Adresse2__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Mailing_Adresse3__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Other_Adresse2__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Other_Adresse3__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Support__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Tuteur_Consommateur__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Carte_Restaurant_2__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Precision_origine__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Type_Carte__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Civilite_Email_Template__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Fonction_client_BO__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Agent_Prime_Email__c" type="String" expression="" isNullable="true"/>
+        <entry name="CreatedByPartner__c" type="String" expression="" isNullable="true"/>
+        <entry name="PartnerAccount__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Agent_Prime__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Type_Compte__c" type="String" expression="" isNullable="true"/>
+        <entry name="SoCare_Debut_Hypercare__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="SoCare_Fin_Hypercare__c" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="SoCare_IsHypercare__c" type="boolean" expression="" isNullable="false"/>
+        <entry name="ID_18C__c" type="String" expression="" isNullable="true"/>
+        <entry name="Equipe__c" type="String" expression="" isNullable="true"/>
+        <entry name="Manager__c" type="String" expression="" isNullable="true"/>
+        <entry name="IdGlady__c" type="String" expression="" isNullable="true"/>
+        <entry name="RoleCSE__c" type="String" expression="" isNullable="true"/>
+      </metadataTableEntries>
+    </table>
+    <table name="imple" matching-mode="UNIQUE_MATCH" lookup-mode="LOAD_ONCE" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="true" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="true" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="idGlady" type="String" expression="AssCtcImplem.Implementation__c " isNullable="true"/>
+        <entry name="IdPluxee" type="String" expression="" isNullable="true"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+  <mapperTable type="output">
+    <table name="AssImpleOut" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="Id" type="String" expression="" isNullable="false"/>
+        <entry name="CreatedDate" type="java.util.Date" expression="AssCtcImplem.CreatedDate" isNullable="false"/>
+        <entry name="LastModifiedDate" type="java.util.Date" expression="AssCtcImplem.LastModifiedDate" isNullable="false"/>
+        <entry name="Implementation__c" type="String" expression="imple.IdPluxee " isNullable="false"/>
+        <entry name="Administrateur__c" type="String" expression="contact.Id " isNullable="false"/>
+        <entry name="Acces_Logiciel_de_comptabilite__c" type="boolean" expression="AssCtcImplem.Acces_Logiciel_de_comptabilite__c" isNullable="false"/>
+        <entry name="Acces_Logiciel_de_gestion__c" type="boolean" expression="AssCtcImplem.Acces_Logiciel_de_gestion__c" isNullable="false"/>
+        <entry name="Acces_site_internet__c" type="boolean" expression="AssCtcImplem.Acces_site_internet__c" isNullable="false"/>
+        <entry name="ID_logiciel_de_comptabilite__c" type="String" expression="AssCtcImplem.ID_logiciel_de_comptabilite__c" isNullable="true"/>
+        <entry name="ID_logiciel_de_gestion__c" type="String" expression="AssCtcImplem.ID_logiciel_de_gestion__c" isNullable="true"/>
+        <entry name="ID_site__c" type="String" expression="AssCtcImplem.ID_site__c" isNullable="true"/>
+        <entry name="MDP_temporaire_Logiciel_de_compta__c" type="String" expression="AssCtcImplem.MDP_temporaire_Logiciel_de_compta__c" isNullable="true"/>
+        <entry name="MDP_temporaire_Logiciel_de_gestion__c" type="String" expression="AssCtcImplem.MDP_temporaire_Logiciel_de_gestion__c" isNullable="true"/>
+        <entry name="MDP_temporaire_Site_internet__c" type="String" expression="AssCtcImplem.MDP_temporaire_Site_internet__c" isNullable="true"/>
+        <entry name="URL_du_logiciel_de_comptabilite__c" type="String" expression="AssCtcImplem.URL_du_logiciel_de_comptabilite__c" isNullable="true"/>
+        <entry name="URL_du_logiciel_de_gestion__c" type="String" expression="AssCtcImplem.URL_du_logiciel_de_gestion__c" isNullable="true"/>
+        <entry name="URL_site_internet__c" type="String" expression="AssCtcImplem.URL_site_internet__c" isNullable="true"/>
+        <entry name="IdGlady__c" type="String" expression="AssCtcImplem.Id " isNullable="true"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+  <mapperTable type="var">
+    <table name="Var" isMinimized="true" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="false" columnNameFilter="null"/>
+  </mapperTable>
+</externalNode>
