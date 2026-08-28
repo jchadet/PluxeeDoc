@@ -1,0 +1,53 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<externalNode i18n.job.component.parameters="Param&#232;tres du composant :" i18n.job.properties="Propri&#233;t&#233;s" i18n.job.values="Valeurs" i18n.mapper.table.for="Table de mapping de " i18n.mapper.table.properties="Propri&#233;t&#233;s de la table de mapping" i18n.job.name="Nom" i18n.tmap.matching.mode="Mode de rapprochement" i18n.mapper.table.isminimized="isMinimized" i18n.tmap.isreject="isReject" i18n.tmap.isrejectinnnerjoin="isRejectInnerJoin" i18n.tmap.isinnerjoin="isInnerJoin" i18n.tmap.expressionfilter="expressionFilter" i18n.mapper.table.metadata.entries="Entr&#233;es d'une table de m&#233;tadonn&#233;es" i18n.job.type="Type" i18n.mapper.table.expression="Expression" i18n.tmap.isnullable="isNullable" i18n.tmap.constraint.entries="Contrainte d'entr&#233;es de table" name="tMap_9" preview="pictures/_sLnbsHkkEfGKd5FAa-Fv2A-tMap_9-PREVIEW.bmp">
+  <parameters>
+    <column name="Statistiques du tStatCatcher">false</column>
+    <column name="Les liens de mapping s'affichent comme&#160;:">AUTO</column>
+    <column name="Chemin du r&#233;pertoire des donn&#233;es temporaires :"></column>
+    <column name="Taille maximale de la m&#233;moire tampon (nombre de lignes) :">2000000</column>
+    <column name="Ignorer les z&#233;ros de fin pour BigDecimal">true</column>
+    <column name="Afficher les informations">false</column>
+    <column name="Commentaire"><![CDATA[]]></column>
+    <column name="Utiliser une r&#232;gle de validation existante">false</column>
+  </parameters>
+  <mapperTable type="input">
+    <table name="eventsKo" matching-mode="UNIQUE_MATCH" lookup-mode="LOAD_ONCE" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="WhoId" type="String" expression="" isNullable="true"/>
+        <entry name="Subject" type="String" expression="" isNullable="true"/>
+        <entry name="Description" type="String" expression="" isNullable="true"/>
+        <entry name="CreatedDate" type="java.util.Date" expression="" isNullable="false"/>
+        <entry name="IdGlady__c" type="String" expression="" isNullable="true"/>
+        <entry name="EndDateTime" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="StartDateTime" type="java.util.Date" expression="" isNullable="true"/>
+        <entry name="Type" type="String" expression="" isNullable="true"/>
+        <entry name="Id" type="String" expression="" isNullable="true"/>
+        <entry name="errorCode" type="String" expression="" isNullable="false"/>
+        <entry name="errorFields" type="String" expression="" isNullable="false"/>
+        <entry name="errorMessage" type="String" expression="" isNullable="false"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+  <mapperTable type="output">
+    <table name="EventKo" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="true" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="errorCode" type="String" expression="eventsKo.errorCode " isNullable="false"/>
+        <entry name="errorFields" type="String" expression="eventsKo.errorFields " isNullable="false"/>
+        <entry name="errorMessage" type="String" expression="eventsKo.errorMessage " isNullable="false"/>
+        <entry name="id_source" type="String" expression="Var.id_source " isNullable="false"/>
+        <entry name="salesforce_id" type="String" expression="Var.salesforce_id " isNullable="false"/>
+        <entry name="result" type="String" expression="Var.result " isNullable="false"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+  <mapperTable type="var">
+    <table name="Var" isMinimized="false" isReject="false" isRejectInnerJoin="false" isInnerJoin="false" isPersistent="false" expressionFilter="null" activateExpressionFilter="false" activateCondensedTool="false" activateColumnNameFilter="false" columnNameFilter="null">
+      <metadataTableEntries>
+        <entry name="id_source" type="String" expression="eventsKo.IdGlady__c " isNullable="false"/>
+        <entry name="salesforce_id" type="String" expression="eventsKo.Id " isNullable="false"/>
+        <entry name="result" type="String" expression="&quot;failed&quot; " isNullable="false"/>
+      </metadataTableEntries>
+    </table>
+  </mapperTable>
+</externalNode>
