@@ -1,0 +1,263 @@
+<h1>2. Process Talend</h1>
+
+<p>Les deux jobs sont construits sur le m&ecirc;me sch&eacute;ma, r&eacute;p&eacute;t&eacute; autant de fois qu'il y a d'objets.
+Comprendre un sous-job, c'est les comprendre tous. Cette page d&eacute;crit ce sch&eacute;ma, ce qu'il produit,
+et les trois m&eacute;canismes qui peuvent faire qu'un job se termine en vert alors que le r&eacute;sultat est incomplet.</p>
+
+<h2>2.1 Anatomie d'un sous-job</h2>
+
+<p>Chaque objet migr&eacute; suit la m&ecirc;me s&eacute;quence&nbsp;:</p>
+
+<pre><code>tSalesforceInput (source)          lecture SOQL dans l'org source
+        |
+        |   + tSalesforceInput (lookups)   r&eacute;solution des Id de destination
+        v
+     tMap                          mapping des champs, traduction des listes de s&eacute;lection
+        |
+        +--&gt; tReplicate --&gt; tFileOutputDelimited    fichier ...Data.csv  (ce qui est envoy&eacute;)
+        |
+        v
+tSalesforceOutput (destination)    INSERT dans l'org de destination
+        |
+        +-- flux principal --&gt; tMap --&gt; fichier ..._ok.csv
+        +-- flux Reject ------&gt; tMap --&gt; fichier ..._ko.csv</code></pre>
+
+<div style="border-left:4px solid #666; padding:8px 12px; margin:16px 0; background:#f7f7f7;">
+<strong>&#128206; Capture &agrave; ins&eacute;rer ici</strong> &mdash; <code>Capture d'&eacute;cran 2026-08-28 145140.png</code><br/>
+<em>L&eacute;gende&nbsp;: le job Lead dans son ensemble. Le bloc du haut est le sous-job Lead et illustre le sch&eacute;ma
+ci-dessus&nbsp;; les deux blocs inf&eacute;rieurs (&Eacute;v&eacute;nements, T&acirc;ches) le r&eacute;p&egrave;tent &agrave; l'identique.
+&Agrave; gauche, les branches <code>tPrejob</code> et <code>tPostjob</code>.</em>
+</div>
+
+<h2>2.2 La requ&ecirc;te SOQL d&eacute;finit le p&eacute;rim&egrave;tre r&eacute;ellement migr&eacute;</h2>
+
+<p>C'est le point le plus important de cette page.</p>
+
+<p>Le sch&eacute;ma du composant d'entr&eacute;e contient <strong>tous</strong> les champs de l'objet Salesforce &mdash;
+327&nbsp;colonnes sur l'Opportunit&eacute;, par exemple. Mais seuls les champs <strong>&eacute;num&eacute;r&eacute;s dans la clause
+<code>SELECT</code></strong> sont r&eacute;ellement remplis &agrave; l'ex&eacute;cution.</p>
+
+<p>Cons&eacute;quence&nbsp;: un champ mapp&eacute; dans le <code>tMap</code> mais absent du <code>SELECT</code>
+arrive <strong>vide dans l'org de destination</strong>, sans erreur, sans rejet, sans trace.
+Le compteur d'insertions r&eacute;ussies reste identique.</p>
+
+<p>La clause <code>WHERE</code> joue le m&ecirc;me r&ocirc;le pour les enregistrements&nbsp;: elle est la d&eacute;finition
+op&eacute;rationnelle du p&eacute;rim&egrave;tre. Les requ&ecirc;tes compl&egrave;tes et leur lecture d&eacute;taill&eacute;e sont en <strong>page&nbsp;3</strong>.</p>
+
+<h2>2.3 Les lookups inter-orgs</h2>
+
+<p>Un enregistrement source r&eacute;f&eacute;rence ses parents par des Id de l'org source, inutilisables dans l'org
+de destination. Chaque rattachement passe donc par un lookup&nbsp;: une requ&ecirc;te sur l'org de destination
+qui ram&egrave;ne les couples <code>Id</code> / <code>IdGlady__c</code>, jointe dans le <code>tMap</code>.</p>
+
+<h3>Le type de jointure d&eacute;cide de ce qui arrive aux orphelins</h3>
+
+<table>
+  <tr><th>Type</th><th>Comportement si le parent n'est pas trouv&eacute;</th></tr>
+  <tr><td><strong>Jointure externe</strong> (par d&eacute;faut)</td>
+      <td>L'enregistrement passe, le champ de rattachement reste vide.</td></tr>
+  <tr><td><strong>Jointure interne</strong></td>
+      <td>L'enregistrement est <strong>&eacute;cart&eacute; du flux</strong>. Il n'appara&icirc;t ni dans le fichier de r&eacute;sultat,
+          ni dans le fichier de rejet&nbsp;: il dispara&icirc;t.</td></tr>
+</table>
+
+<h3>Inventaire des lookups</h3>
+
+<table>
+  <tr><th>Job</th><th>tMap</th><th>Lookup</th><th>Cl&eacute; de jointure</th><th>Type</th><th>Effet si non r&eacute;solu</th></tr>
+  <tr><td>Lead</td><td>tMap_1</td><td>Code_NAF__c</td><td>Code APE source normalis&eacute;</td><td>externe</td><td>Code NAF vide</td></tr>
+  <tr><td>Lead</td><td>tMap_1</td><td>RecordType</td><td>par <code>DeveloperName</code> (ligne unique)</td><td>externe</td><td>Record type par d&eacute;faut appliqu&eacute;</td></tr>
+  <tr><td>Lead</td><td>tMap_1</td><td>Account</td><td><code>IdGlady__c</code> = compte de conversion</td><td>externe</td><td>Compte converti vide</td></tr>
+  <tr><td>Lead</td><td>tMap_1</td><td>Contact</td><td><code>IdGlady__c</code> = contact de conversion</td><td>externe</td><td>Contact converti vide</td></tr>
+  <tr><td>Lead</td><td>tMap_1</td><td>Opportunity</td><td><code>IdGlady__c</code> = opportunit&eacute; de conversion</td><td>externe</td><td>Opportunit&eacute; convertie vide</td></tr>
+  <tr><td>Lead</td><td>tMap_4</td><td>Lead migr&eacute;</td><td><code>IdGlady__c</code></td><td><strong>interne</strong></td><td>T&acirc;che &eacute;cart&eacute;e</td></tr>
+  <tr><td>Lead</td><td>tMap_7</td><td>Lead migr&eacute;</td><td><code>IdGlady__c</code></td><td><strong>interne</strong></td><td>&Eacute;v&eacute;nement &eacute;cart&eacute;</td></tr>
+  <tr><td>Oppo</td><td>tMap_1</td><td>Account</td><td><code>IdGlady__c</code></td><td><strong>interne</strong></td><td>Opportunit&eacute; &eacute;cart&eacute;e</td></tr>
+  <tr><td>Oppo</td><td>tMap_1</td><td>RecordType</td><td>par <code>DeveloperName</code></td><td>externe</td><td>Record type par d&eacute;faut</td></tr>
+  <tr><td>Oppo</td><td>tMap_4 / tMap_6</td><td>Table des <code>WhatId</code></td><td>Id source du parent</td><td><strong>interne</strong></td><td>T&acirc;che / &Eacute;v&eacute;nement &eacute;cart&eacute;</td></tr>
+  <tr><td>Oppo</td><td>tMap_8</td><td>Opportunit&eacute;s migr&eacute;es</td><td>Id source de l'opportunit&eacute;</td><td><strong>interne</strong></td><td>Impl&eacute;mentation &eacute;cart&eacute;e</td></tr>
+  <tr><td>Oppo</td><td>tMap_8</td><td>RecordType</td><td>par <code>DeveloperName</code></td><td>externe</td><td>Record type par d&eacute;faut</td></tr>
+  <tr><td>Oppo</td><td>tMap_10</td><td>Impl&eacute;mentations migr&eacute;es</td><td>Id source de l'impl&eacute;mentation</td><td><strong>interne</strong></td><td>Association &eacute;cart&eacute;e</td></tr>
+  <tr><td>Oppo</td><td>tMap_10</td><td>Contact</td><td><code>IdGlady__c</code> = administrateur source</td><td><strong>interne</strong></td><td>Association &eacute;cart&eacute;e</td></tr>
+  <tr><td>Oppo</td><td>tMap_13</td><td>Account / Opportunity / Contact</td><td><code>IdGlady__c</code></td><td><strong>interne</strong></td><td>Devis &eacute;cart&eacute;</td></tr>
+</table>
+
+<p>Tous les lookups sont charg&eacute;s en m&eacute;moire une fois pour toutes au d&eacute;marrage du sous-job
+(<em>Load once</em>) et retiennent une correspondance unique par cl&eacute;.</p>
+
+<h3>Deux lookups particuliers</h3>
+
+<ul>
+  <li><strong>Record type par <code>DeveloperName</code>.</strong> L'Id technique d'un record type diff&egrave;re d'une org
+      &agrave; l'autre&nbsp;; son <code>DeveloperName</code> est stable. Les jobs r&eacute;solvent donc l'Id &agrave; l'ex&eacute;cution &agrave; partir
+      du nom. Les noms utilis&eacute;s sont &eacute;crits en dur dans les requ&ecirc;tes&nbsp;: ils sont list&eacute;s en page&nbsp;3 et doivent
+      &ecirc;tre v&eacute;rifi&eacute;s dans chaque org cible.</li>
+  <li><strong>Code NAF.</strong> C&ocirc;t&eacute; destination, le code NAF n'est pas un texte mais une relation vers un objet
+      r&eacute;f&eacute;rentiel. Le code source est normalis&eacute; (point retir&eacute;, mise en majuscules) puis r&eacute;solu vers l'Id
+      de l'enregistrement du r&eacute;f&eacute;rentiel.</li>
+</ul>
+
+<h2>2.4 Les tables de correspondance d'Id par fichier</h2>
+
+<p>Sp&eacute;cifique au job Opportunit&eacute;s/Devis. Apr&egrave;s chaque insertion, le job <strong>relit l'org de destination</strong>
+et &eacute;crit un fichier CSV de couples <code>idGlady;IdPluxee</code>, qui sert de lookup aux sous-jobs suivants.</p>
+
+<table>
+  <tr><th>Fichier</th><th>Produit par</th><th>Consomm&eacute; par</th></tr>
+  <tr><td><code>Opportunity_ok.csv</code></td><td>Sous-job 2, apr&egrave;s insertion des opportunit&eacute;s</td><td>Impl&eacute;mentations, et la fusion</td></tr>
+  <tr><td><code>Implementation_ok.csv</code></td><td>Sous-job 4</td><td>Associations Contact&ndash;Impl&eacute;mentation, et la fusion</td></tr>
+  <tr><td><code>idGlady_idPluxee_whatId.csv</code></td><td>Sous-job 6, fusion des deux pr&eacute;c&eacute;dents (<code>tUnite</code>)</td><td>T&acirc;ches et &Eacute;v&eacute;nements</td></tr>
+</table>
+
+<div style="border-left:4px solid #a33; padding:8px 12px; margin:16px 0; background:#fdf3f3;">
+<strong>Attention au suffixe <code>_ok</code>.</strong> Dans le job Lead, <code>Lead_ok.csv</code> est un
+<em>fichier de r&eacute;sultat</em>&nbsp;: la liste des insertions r&eacute;ussies. Dans le job Opportunit&eacute;s/Devis,
+<code>Opportunity_ok.csv</code> et <code>Implementation_ok.csv</code> sont des <em>tables de correspondance
+d'Id</em> &agrave; usage interne. M&ecirc;me suffixe, r&ocirc;le diff&eacute;rent.
+</div>
+
+<h2>2.5 Gestion des erreurs</h2>
+
+<p>Aucun code sp&eacute;cifique&nbsp;: les jobs utilisent le <strong>chemin Reject</strong> standard du composant de sortie
+Salesforce. Chaque enregistrement refus&eacute; y arrive avec le motif du refus, ce qu'un simple compteur ne
+donnerait pas.</p>
+
+<p>Tous les fichiers de rejet ont le m&ecirc;me format&nbsp;:</p>
+
+<pre><code>id_source ; salesforce_id ; result ; errorCode ; errorFields ; errorMessage</code></pre>
+
+<table>
+  <tr><th>Colonne</th><th>Contenu</th></tr>
+  <tr><td><code>id_source</code></td><td>Id de l'enregistrement dans l'org source &mdash; permet de le retrouver et de le corriger &agrave; la source</td></tr>
+  <tr><td><code>salesforce_id</code></td><td>Id de destination, vide sur un rejet</td></tr>
+  <tr><td><code>result</code></td><td><code>Inserted</code> ou <code>failed</code></td></tr>
+  <tr><td><code>errorCode</code></td><td>Code Salesforce&nbsp;: <code>FIELD_CUSTOM_VALIDATION_EXCEPTION</code>, <code>DUPLICATE_VALUE</code>, <code>STRING_TOO_LONG</code>&hellip;</td></tr>
+  <tr><td><code>errorFields</code></td><td>Champs en cause</td></tr>
+  <tr><td><code>errorMessage</code></td><td>Message d'erreur, souvent directement lisible par le m&eacute;tier</td></tr>
+</table>
+
+<p>La pr&eacute;sence de l'Id source rend ces fichiers directement exploitables comme support d'&eacute;change avec
+le m&eacute;tier pour le nettoyage des donn&eacute;es. Voir page&nbsp;8.</p>
+
+<h2>2.6 Les fichiers produits</h2>
+
+<p>Trois familles&nbsp;:</p>
+
+<ul>
+  <li><code><strong>...Data.csv</strong></code> &mdash; ce qui est <em>envoy&eacute;</em> &agrave; l'org de destination, apr&egrave;s mapping et
+      traduction des listes de s&eacute;lection. Le seul endroit o&ugrave; l'on voit les valeurs transform&eacute;es
+      telles qu'elles partent&nbsp;: pr&eacute;cieux pour v&eacute;rifier une correspondance ou une valeur vide inattendue.</li>
+  <li><code><strong>..._ok.csv</strong></code> &mdash; les insertions r&eacute;ussies (ou, dans le job Opportunit&eacute;s/Devis,
+      les tables de correspondance d'Id&nbsp;: voir l'encadr&eacute; ci-dessus).</li>
+  <li><code><strong>..._ko.csv</strong></code> &mdash; les rejets, avec leur motif.</li>
+</ul>
+
+<table>
+  <tr><th>Job Lead</th><th>Job Opportunit&eacute;s / Devis</th></tr>
+  <tr><td valign="top">
+    <code>Lead_data.csv</code><br/>
+    <code>Lead_ok.csv</code> &middot; <code>Lead_ko.csv</code><br/>
+    <code>Lead_Task_ok.csv</code> &middot; <code>Lead_Task_ko.csv</code><br/>
+    <code>Lead_Event_ok.csv</code> &middot; <code>Lead_Event_ko.csv</code>
+  </td><td valign="top">
+    <code>OpportunityData.csv</code> &middot; <code>DevisData.csv</code><br/>
+    <code>Opportunity_ko.csv</code><br/>
+    <code>Opportunity_Task_ko.csv</code> &middot; <code>Opportunity_Event_ko.csv</code><br/>
+    <code>Implementation_ko.csv</code><br/>
+    <code>AssociationContactImplementation_ko.csv</code><br/>
+    <code>Devis_ko.csv</code><br/>
+    <em>tables de correspondance&nbsp;:</em> <code>Opportunity_ok.csv</code>,
+    <code>Implementation_ok.csv</code>, <code>idGlady_idPluxee_whatId.csv</code>
+  </td></tr>
+</table>
+
+<p>Format commun&nbsp;: UTF-8, s&eacute;parateur <code>;</code>, ligne d'en-t&ecirc;te.</p>
+
+<p><strong>&Agrave; noter&nbsp;:</strong> le job Opportunit&eacute;s/Devis ne produit pas de fichier de r&eacute;sultat des insertions
+r&eacute;ussies, seulement les rejets et les tables de correspondance. La tra&ccedil;abilit&eacute; des succ&egrave;s s'y fait
+par les compteurs d'ex&eacute;cution et par les fichiers <code>...Data.csv</code>.</p>
+
+<h2>2.7 tPreJob et tPostJob</h2>
+
+<p>Les deux jobs encadrent leur traitement par deux composants Java&nbsp;:</p>
+
+<pre><code>// tPrejob &rarr; tJava_1
+PicklistMapper.load(context.resource_dir + "/picklist_mapping.csv");
+
+// tPostjob &rarr; tJava_2
+PicklistMapper.dumpUnmapped(context.resource_dir + "/picklist_unmapped.csv");</code></pre>
+
+<p>Le premier charge en m&eacute;moire le fichier de correspondance des valeurs de listes de s&eacute;lection&nbsp;;
+le second &eacute;crit, en fin de job, l'inventaire des valeurs rencontr&eacute;es sans correspondance.
+Voir page&nbsp;4.</p>
+
+<p>Une ligne <code>PicklistMapper.setDebug(true);</code> est pr&eacute;sente en commentaire dans le
+<code>tPrejob</code>. Elle trace en console chaque traduction&nbsp;: utile pour un test sur un petit
+volume, &agrave; laisser d&eacute;sactiv&eacute;e pour un run r&eacute;el.</p>
+
+<h2>2.8 Variables de contexte</h2>
+
+<p>Un groupe de contexte partag&eacute; par les deux jobs porte deux variables&nbsp;:</p>
+
+<table>
+  <tr><th>Variable</th><th>Contenu</th><th>Utilis&eacute;e par</th></tr>
+  <tr><td><code>output_dir</code></td><td>R&eacute;pertoire d'&eacute;criture et de relecture des fichiers CSV</td>
+      <td>Les 24&nbsp;composants fichier des deux jobs</td></tr>
+  <tr><td><code>resource_dir</code></td><td>R&eacute;pertoire du fichier de correspondance des listes de s&eacute;lection et du fichier d'audit</td>
+      <td>Les composants <code>tPrejob</code> / <code>tPostjob</code></td></tr>
+</table>
+
+<p>Aucun chemin n'est &eacute;crit en dur dans les composants&nbsp;: changer de poste ou d'environnement
+se fait en modifiant ces deux valeurs. Le groupe de contexte accepte plusieurs jeux de valeurs
+(une colonne par environnement), s&eacute;lectionnables au lancement.</p>
+
+<h2>2.9 Param&egrave;tres de sortie communs</h2>
+
+<p>Les neuf composants de sortie Salesforce des deux jobs partagent la m&ecirc;me configuration&nbsp;:</p>
+
+<table>
+  <tr><th>Param&egrave;tre</th><th>Valeur</th><th>Cons&eacute;quence</th></tr>
+  <tr><td>Action</td><td><code>INSERT</code></td><td>Pas d'upsert&nbsp;: un enregistrement d&eacute;j&agrave; migr&eacute; est rejet&eacute; au rejeu (voir page&nbsp;5).</td></tr>
+  <tr><td>Arr&ecirc;t en cas d'erreur</td><td>d&eacute;sactiv&eacute;</td><td>Un rejet n'interrompt pas le job&nbsp;: il part dans le fichier <code>_ko</code> et le traitement continue.</td></tr>
+  <tr><td>Insertions &eacute;tendues</td><td>activ&eacute;</td><td>Envoi par lots.</td></tr>
+  <tr><td>Niveau de commit</td><td>200</td><td>Taille des lots envoy&eacute;s &agrave; l'API.</td></tr>
+  <tr><td>Ignorer les valeurs nulles</td><td>d&eacute;sactiv&eacute;</td><td>Un champ mapp&eacute; &agrave; <code>null</code> est bien envoy&eacute; comme vide.</td></tr>
+  <tr><td>Dates en UTC</td><td>activ&eacute;</td><td>Uniformise le traitement des dates et heures.</td></tr>
+  <tr><td>Version d'API</td><td>52.0</td><td></td></tr>
+</table>
+
+<h2>2.10 Pourquoi un job &laquo;&nbsp;vert&nbsp;&raquo; peut &ecirc;tre faux</h2>
+
+<div style="border-left:4px solid #a33; padding:8px 12px; margin:16px 0; background:#fdf3f3;">
+<p><strong>Trois m&eacute;canismes produisent des donn&eacute;es incompl&egrave;tes sans lever la moindre erreur.</strong>
+Le compteur d'insertions r&eacute;ussies ne les voit pas, les fichiers de rejet non plus.</p>
+<ol>
+  <li><strong>Un champ mapp&eacute; mais absent du <code>SELECT</code></strong> arrive vide dans l'org de destination.</li>
+  <li><strong>Un lookup en jointure interne dont le parent manque</strong> fait dispara&icirc;tre l'enregistrement
+      enfant du flux, sans ligne de rejet.</li>
+  <li><strong>Un champ sans droit d'&eacute;criture</strong> pour l'utilisateur d'int&eacute;gration est ignor&eacute; silencieusement
+      par Salesforce.</li>
+</ol>
+<p>C'est pour cette raison que la v&eacute;rification d'un run ne se limite jamais au compteur de succ&egrave;s.
+Les quatre contr&ocirc;les &agrave; effectuer sont d&eacute;crits en <strong>page&nbsp;8</strong>.</p>
+</div>
+
+<h2>2.11 Lire une ex&eacute;cution dans le Studio</h2>
+
+<p>Pendant et apr&egrave;s l'ex&eacute;cution, Talend affiche en vert, sur chaque lien du sch&eacute;ma, le nombre de lignes
+qui l'ont travers&eacute;. C'est le moyen le plus rapide de localiser une anomalie&nbsp;:</p>
+
+<ul>
+  <li>Le compteur en sortie de la requ&ecirc;te source donne le volume r&eacute;ellement extrait&nbsp;: s'il est nul ou
+      tr&egrave;s inf&eacute;rieur &agrave; l'attendu, le probl&egrave;me est dans la clause <code>WHERE</code>, pas dans le mapping.</li>
+  <li>Un &eacute;cart entre l'entr&eacute;e et la sortie d'un <code>tMap</code> signale une jointure interne qui &eacute;carte des lignes.</li>
+  <li>Un compteur &agrave; z&eacute;ro sur un sous-job enfant alors que le parent a bien produit des enregistrements
+      indique une table de correspondance vide ou un rattachement qui ne se fait pas.</li>
+</ul>
+
+<div style="border-left:4px solid #666; padding:8px 12px; margin:16px 0; background:#f7f7f7;">
+<strong>&#128206; Captures compl&eacute;mentaires (facultatives)</strong> &mdash; disponibles dans la documentation g&eacute;n&eacute;r&eacute;e par Talend&nbsp;:
+<code>MigrationPluxeeLead_v2/pictures/tMap_1.png</code> et <code>MigrationPluxeeOppoDevis/pictures/tMap_13.png</code><br/>
+<em>L&eacute;gende&nbsp;: d&eacute;tail d'un tMap &mdash; entr&eacute;es &agrave; gauche, lookups au centre, sortie mapp&eacute;e &agrave; droite.
+&Agrave; ins&eacute;rer si l'on souhaite illustrer la section&nbsp;2.1 par un exemple concret.</em>
+</div>

@@ -1,0 +1,230 @@
+<h1>6. D&eacute;cisions &amp; arbitrages &mdash; Lead &amp; Activit&eacute;s</h1>
+
+<p>Arbitrages sp&eacute;cifiques au job <code>MigrationPluxeeLead_v2</code>. La grille de lecture et les statuts
+sont d&eacute;finis en page&nbsp;5.</p>
+
+<table>
+  <tr><th>#</th><th>Sujet</th><th>Statut</th></tr>
+  <tr><td>L1</td><td>P&eacute;rim&egrave;tre &mdash; leads non convertis uniquement</td><td>Valid&eacute;</td></tr>
+  <tr><td>L2</td><td>La conversion est recr&eacute;&eacute;e c&ocirc;t&eacute; destination</td><td>D&eacute;duit</td></tr>
+  <tr><td>L3</td><td>Code NAF &mdash; r&eacute;solution vers un r&eacute;f&eacute;rentiel</td><td>Valid&eacute;</td></tr>
+  <tr><td>L4</td><td>Origine du lead &mdash; une source, trois cibles</td><td>D&eacute;duit</td></tr>
+  <tr><td>L5</td><td>Fonction &mdash; valeur par d&eacute;faut &laquo;&nbsp;Autre&nbsp;&raquo;</td><td>&Agrave; confirmer</td></tr>
+  <tr><td>L6</td><td>Type de soci&eacute;t&eacute; &mdash; valeur constante</td><td>&Agrave; confirmer</td></tr>
+  <tr><td>L7</td><td>Raison du statut &mdash; d&eacute;faut conditionn&eacute;</td><td>&Agrave; confirmer</td></tr>
+  <tr><td>L8</td><td>Tranche d'effectif &mdash; correspondance approximative</td><td>D&eacute;duit</td></tr>
+  <tr><td>L9</td><td>Champs mis de c&ocirc;t&eacute;</td><td>Valid&eacute;</td></tr>
+</table>
+
+<h2>L1. P&eacute;rim&egrave;tre &mdash; leads non convertis uniquement</h2>
+
+<p><strong>Contexte.</strong> Un lead converti c&ocirc;t&eacute; source devient inaccessible&nbsp;: il passe en lecture seule
+et dispara&icirc;t derri&egrave;re le Compte, le Contact et l'Opportunit&eacute; issus de la conversion.</p>
+
+<p><strong>D&eacute;cision (valid&eacute;e).</strong> La requ&ecirc;te source porte <code>IsConverted = false</code>.
+Les leads convertis ne sont pas migr&eacute;s&nbsp;: leurs donn&eacute;es sont accessibles via les trois objets issus
+de la conversion, qui sont eux migr&eacute;s par ailleurs.</p>
+
+<p><strong>Limite.</strong> L'historique du lead lui-m&ecirc;me &mdash; date de cr&eacute;ation, origine, parcours de
+qualification &mdash; n'est pas repris pour ces enregistrements.</p>
+
+<p><strong>En production.</strong> D&eacute;cision maintenue. Le job supporterait leur reprise sans modification
+structurelle si le besoin apparaissait&nbsp;: il suffirait de retirer la condition. Elle est &agrave; reporter
+dans les deux sous-requ&ecirc;tes d'activit&eacute;s (page&nbsp;3).</p>
+
+<h2>L2. La conversion est recr&eacute;&eacute;e c&ocirc;t&eacute; destination</h2>
+
+<div style="border-left:4px solid #666; padding:8px 12px; margin:16px 0; background:#f7f7f7;">
+<strong>Point le moins intuitif de la migration</strong>, et celui qui explique la plupart des r&egrave;gles de
+validation rencontr&eacute;es sur le Lead.
+</div>
+
+<p><strong>Contexte.</strong> Le p&eacute;rim&egrave;tre exclut les leads convertis (L1). Mais dans l'org source, certains
+leads <em>non convertis au sens de la plateforme</em> portent un statut m&eacute;tier qui &eacute;quivaut &agrave; une conversion
+(cl&ocirc;ture converti, qualifi&eacute;, BANT compl&eacute;t&eacute;). C&ocirc;t&eacute; destination, ces leads doivent appara&icirc;tre comme convertis
+pour que les rapports d'entonnoir soient justes.</p>
+
+<p><strong>D&eacute;cision (d&eacute;duite).</strong> Le <code>tMap</code> reconstitue la conversion &agrave; partir du statut source&nbsp;:</p>
+
+<table>
+  <tr><th>Champ de destination</th><th>Alimentation</th></tr>
+  <tr><td><code>IsConverted</code></td><td><code>true</code> si le statut source vaut l'un des trois statuts &eacute;quivalents &agrave; une conversion</td></tr>
+  <tr><td><code>ConvertedDate</code></td><td>Date de conversion source, dans les m&ecirc;mes conditions&nbsp;; <code>null</code> sinon</td></tr>
+  <tr><td><code>ConvertedAccountId</code></td><td>Lookup sur le compte migr&eacute;, par <code>IdGlady__c</code></td></tr>
+  <tr><td><code>ConvertedContactId</code></td><td>Lookup sur le contact migr&eacute;</td></tr>
+  <tr><td><code>ConvertedOpportunityId</code></td><td>Lookup sur l'opportunit&eacute; migr&eacute;e</td></tr>
+</table>
+
+<p><strong>Cons&eacute;quence directe.</strong> C'est cette reconstitution qui d&eacute;clenche les r&egrave;gles de validation
+&laquo;&nbsp;requis pour convertir&nbsp;&raquo; de l'org de destination, et donc les arbitrages L5, L6 et L7 ci-dessous.
+Ces r&egrave;gles ne portent pas sur le fait que le lead ait &eacute;t&eacute; converti dans l'org source, mais sur le fait
+qu'il soit marqu&eacute; comme converti dans l'org de destination.</p>
+
+<p><strong>Limite.</strong> Les trois lookups d&eacute;pendent de la migration pr&eacute;alable des comptes, contacts et
+opportunit&eacute;s. Non r&eacute;solus, ils laissent les champs vides sans emp&ecirc;cher l'insertion&nbsp;: le lead est
+marqu&eacute; converti mais sans cible de conversion.</p>
+
+<p><strong>En production.</strong> Faire confirmer par le m&eacute;tier que les trois statuts retenus correspondent
+bien &agrave; une conversion. Contr&ocirc;ler apr&egrave;s run le nombre de leads marqu&eacute;s convertis sans compte de conversion&nbsp;:
+un volume &eacute;lev&eacute; signale un probl&egrave;me d'ordonnancement, pas de mapping.</p>
+
+<h2>L3. Code NAF &mdash; r&eacute;solution vers un r&eacute;f&eacute;rentiel</h2>
+
+<p><strong>Contexte.</strong> C&ocirc;t&eacute; source, le code d'activit&eacute; est un champ texte au format point&eacute;
+(<code>10.92Z</code>). C&ocirc;t&eacute; destination, c'est une <strong>relation</strong> vers un objet r&eacute;f&eacute;rentiel
+<code>Code_NAF__c</code>.</p>
+
+<p><strong>D&eacute;cision (valid&eacute;e).</strong> Le code source est normalis&eacute; dans le <code>tMap</code> &mdash; point retir&eacute;,
+mise en majuscules &mdash; puis r&eacute;solu par lookup vers l'Id de l'enregistrement du r&eacute;f&eacute;rentiel&nbsp;:</p>
+
+<pre><code>Code_APE__c == null ? null : Code_APE__c.replace(".", "").toUpperCase()</code></pre>
+
+<p><strong>Limite.</strong> Taux de r&eacute;solution de 100&nbsp;% lorsque le code source existe. Les leads sans code
+d'activit&eacute; restent sans code NAF&nbsp;; une r&egrave;gle de validation de l'org de destination l'exige pour la
+conversion, ce qui produit des rejets sur les leads concern&eacute;s.</p>
+
+<p><strong>En production.</strong> Le r&eacute;f&eacute;rentiel <code>Code_NAF__c</code> (738&nbsp;enregistrements) doit &ecirc;tre
+charg&eacute; dans l'org de destination <strong>avant</strong> la migration&nbsp;: c'est un pr&eacute;requis bloquant du guide de
+reprise. Les leads sans code d'activit&eacute; rel&egrave;vent du nettoyage &agrave; la source (T7).</p>
+
+<h2>L4. Origine du lead &mdash; une source, trois cibles</h2>
+
+<p><strong>Contexte.</strong> Le mod&egrave;le de destination &eacute;clate l'information d'origine sur trois champs
+distincts, l&agrave; o&ugrave; la source n'en porte qu'un.</p>
+
+<p><strong>D&eacute;cision (d&eacute;duite).</strong> Le champ d'origine source alimente trois champs cibles via
+<code>translateTo</code>, chacun avec ses propres lignes dans le fichier de correspondance&nbsp;:</p>
+
+<pre><code>Origine_du_lead__c   &larr; translateTo(&hellip;, "Origine_du_lead__c")
+Precisionorigine__c  &larr; translateTo(&hellip;, "Precisionorigine__c")
+Hubspot_LeadSource__c &larr; translateTo(&hellip;, "Hubspot_LeadSource__c")</code></pre>
+
+<p>C'est le cas d'usage n&deg;2 du PicklistMapper (page&nbsp;4)&nbsp;: une source, plusieurs cibles ind&eacute;pendantes.
+Le champ standard <code>LeadSource</code> est par ailleurs traduit s&eacute;par&eacute;ment.</p>
+
+<p><strong>Limite.</strong> Les trois lignes d'une m&ecirc;me valeur source sont ind&eacute;pendantes dans le fichier&nbsp;:
+en modifier une sans les autres produit une origine incoh&eacute;rente entre les trois champs.</p>
+
+<p><strong>En production.</strong> Si le m&eacute;tier r&eacute;vise la correspondance des origines, la r&eacute;percuter sur les
+trois champs simultan&eacute;ment &mdash; et sur le champ &eacute;quivalent de l'Opportunit&eacute; (page&nbsp;7, arbitrage O4),
+qui r&eacute;utilise la m&ecirc;me logique.</p>
+
+<h2>L5. Fonction &mdash; valeur par d&eacute;faut &laquo;&nbsp;Autre&nbsp;&raquo;</h2>
+
+<p><strong>Contexte.</strong> Une r&egrave;gle de validation de l'org de destination exige un champ Fonction non vide
+pour les leads marqu&eacute;s convertis (voir L2). Le champ source correspondant porte 9&nbsp;valeurs&nbsp;;
+la cible est un jeu de valeurs global d'une cinquantaine de valeurs, auquel 17&nbsp;valeurs ont &eacute;t&eacute;
+ajout&eacute;es pour couvrir la correspondance demand&eacute;e par le m&eacute;tier.</p>
+
+<p><strong>D&eacute;cision (&agrave; confirmer).</strong> Une ligne <code>XX_DEFAULT_XX &rarr; Autre</code> dans le fichier de
+correspondance. Tout lead dont la fonction source est vide ou non mapp&eacute;e re&ccedil;oit &laquo;&nbsp;Autre&nbsp;&raquo;.</p>
+
+<p><strong>Limite.</strong> Le d&eacute;faut s'applique &agrave; <strong>tous</strong> les leads, pas seulement &agrave; ceux marqu&eacute;s
+convertis&nbsp;: c'est une pollution mineure, assum&eacute;e pour la simplicit&eacute; du mapping.</p>
+
+<p><strong>En production.</strong> Le bypass des r&egrave;gles de validation (T1) serait plus propre que le d&eacute;faut
+sur les leads non convertis&nbsp;: il &eacute;viterait de renseigner une fonction fictive sur des enregistrements
+o&ugrave; elle n'est pas exig&eacute;e. Les 17&nbsp;valeurs ajout&eacute;es au jeu de valeurs global doivent &ecirc;tre d&eacute;ploy&eacute;es
+dans l'org cible <strong>avant</strong> le run.</p>
+
+<h2>L6. Type de soci&eacute;t&eacute; &mdash; valeur constante</h2>
+
+<p><strong>Contexte.</strong> Une r&egrave;gle de validation exige un type de soci&eacute;t&eacute; non vide pour les leads
+marqu&eacute;s convertis. <strong>Aucun champ &eacute;quivalent n'existe c&ocirc;t&eacute; source.</strong></p>
+
+<p><strong>D&eacute;cision (&agrave; confirmer).</strong> La valeur <code>Entreprise</code> est &eacute;crite en dur dans le
+<code>tMap</code>, conditionn&eacute;e aux m&ecirc;mes statuts que la conversion (L2). Les autres leads restent
+avec le champ vide.</p>
+
+<p><strong>Limite.</strong> Donn&eacute;e <strong>approximative</strong>. Les leads relevant d'un comit&eacute; social et
+&eacute;conomique devraient logiquement porter une autre valeur, mais aucun moyen fiable de les distinguer
+n'existe c&ocirc;t&eacute; source dans le p&eacute;rim&egrave;tre actuel.</p>
+
+<p><strong>En production.</strong> Le bypass reste la meilleure solution pour ne pas polluer ce champ avec
+une valeur non v&eacute;rifi&eacute;e. Si le m&eacute;tier fournit une r&egrave;gle de distinction &mdash; record type, segment,
+march&eacute;&hellip; &mdash; le mapping peut &ecirc;tre conditionn&eacute; sans difficult&eacute;.</p>
+
+<h2>L7. Raison du statut &mdash; d&eacute;faut conditionn&eacute;</h2>
+
+<p><strong>Contexte.</strong> Une r&egrave;gle de validation exige une raison non vide pour les leads dont le statut
+de destination correspond &agrave; une non-conversion (mise au rebut, remarketing). Le champ source
+&eacute;quivalent est souvent vide, m&ecirc;me pour des leads non qualifi&eacute;s.</p>
+
+<p><strong>D&eacute;cision (&agrave; confirmer).</strong> La logique est enti&egrave;rement dans le <code>tMap</code>, pas dans le
+fichier CSV&nbsp;: la traduction n'est appliqu&eacute;e que si la raison source est renseign&eacute;e, <em>ou</em> si le
+statut traduit correspond &agrave; l'un des deux statuts de non-conversion. Les autres leads gardent le champ vide.</p>
+
+<p><strong>Limite.</strong> La raison r&eacute;elle de non-conversion n'est pas connue pour ces leads&nbsp;:
+la valeur pos&eacute;e est une approximation.</p>
+
+<p><strong>En production.</strong> Si le m&eacute;tier fournit une r&egrave;gle plus fine, la condition du <code>tMap</code>
+peut &ecirc;tre ajust&eacute;e. Noter que cette logique &eacute;tant dans le job et non dans le CSV, sa modification
+demande d'ouvrir Talend.</p>
+
+<h2>L8. Tranche d'effectif &mdash; correspondance approximative</h2>
+
+<p><strong>Contexte.</strong> Deux d&eacute;coupages d'effectif qui ne co&iuml;ncident pas. Le champ num&eacute;rique standard
+<code>NumberOfEmployees</code> a d'abord &eacute;t&eacute; envisag&eacute; comme source, avec un d&eacute;coupage par formule&nbsp;;
+il a &eacute;t&eacute; abandonn&eacute; au profit de la liste de s&eacute;lection source d&eacute;di&eacute;e, mieux renseign&eacute;e.</p>
+
+<p><strong>D&eacute;cision (d&eacute;duite).</strong> Correspondance &laquo;&nbsp;tranche englobante&nbsp;&raquo; via le PicklistMapper&nbsp;:</p>
+
+<table>
+  <tr><th>Tranche source</th><th>Tranche de destination</th><th>Pr&eacute;cision</th></tr>
+  <tr><td>-10</td><td>moins de 50</td><td>approximatif &mdash; pas de tranche inf&eacute;rieure &agrave; 50 c&ocirc;t&eacute; destination</td></tr>
+  <tr><td>11-50</td><td>moins de 50</td><td>approximatif</td></tr>
+  <tr><td>11-100</td><td>50 - 99</td><td><strong>&agrave; cheval</strong></td></tr>
+  <tr><td>51-200</td><td>100 - 250</td><td><strong>&agrave; cheval</strong></td></tr>
+  <tr><td>101-500</td><td>251 - 500</td><td><strong>&agrave; cheval</strong></td></tr>
+  <tr><td>201-500</td><td>251 - 500</td><td>approximatif</td></tr>
+  <tr><td>501-1000</td><td>501 - 1000</td><td>exact</td></tr>
+  <tr><td>1000+</td><td>plus de 1000</td><td>exact</td></tr>
+</table>
+
+<p><strong>Limite.</strong> Les correspondances marqu&eacute;es &laquo;&nbsp;&agrave; cheval&nbsp;&raquo; sont impr&eacute;cises&nbsp;: une tranche
+source chevauche deux tranches de destination, et une seule est retenue. La cr&eacute;ation de tranches
+align&eacute;es c&ocirc;t&eacute; destination a &eacute;t&eacute; volontairement &eacute;cart&eacute;e&nbsp;: les bornes source ne correspondent &agrave; aucun
+d&eacute;coupage propre, l'ambigu&iuml;t&eacute; serait simplement d&eacute;plac&eacute;e.</p>
+
+<p><strong>En production.</strong> C'est au m&eacute;tier de d&eacute;finir les valeurs cibles s'il souhaite un d&eacute;coupage
+exact. En l'&eacute;tat, correspondance d&eacute;grad&eacute;e assum&eacute;e.</p>
+
+<h2>L9. Champs mis de c&ocirc;t&eacute;</h2>
+
+<table>
+  <tr><th>Champ source</th><th>Raison</th><th>Reprise possible&nbsp;?</th></tr>
+  <tr><td>Type de lead</td><td>Absent du mod&egrave;le de destination, li&eacute; &agrave; la restructuration produit</td><td>Apr&egrave;s restructuration</td></tr>
+  <tr><td>March&eacute; / Produit / Famille de produit</td>
+      <td>La cascade est impl&eacute;ment&eacute;e sur l'<strong>Opportunit&eacute;</strong> (page&nbsp;7), pas sur le Lead</td>
+      <td>Transposable si le besoin appara&icirc;t</td></tr>
+  <tr><td>Concurrents</td><td>Aucune donn&eacute;e source sur le Lead</td><td>Sans objet</td></tr>
+  <tr><td>Int&eacute;r&ecirc;t produits</td>
+      <td><strong>0&nbsp;correspondance</strong> sur 28&nbsp;valeurs source&nbsp;: les univers produits ne se recouvrent pas.
+          De plus, liste &agrave; s&eacute;lection multiple vers liste &agrave; s&eacute;lection multiple, ce que la routine ne traite pas.</td>
+      <td>N&eacute;cessite une table de correspondance fournie par le m&eacute;tier et une &eacute;volution de la routine</td></tr>
+  <tr><td>Date de cl&ocirc;ture estim&eacute;e</td>
+      <td>Deux r&egrave;gles de validation la rendent inexploitable&nbsp;: elle est exig&eacute;e pour convertir, <em>et</em> doit
+          &ecirc;tre post&eacute;rieure &agrave; la date du jour. Aucune date historique ne peut satisfaire la seconde condition.</td>
+      <td>Non &mdash; voir ci-dessous</td></tr>
+  <tr><td>&Eacute;valuation, pronoms, identit&eacute; de genre</td><td>Aucune donn&eacute;e d'un c&ocirc;t&eacute; ou de l'autre</td><td>Sans objet</td></tr>
+</table>
+
+<h3>Le cas de la date de cl&ocirc;ture estim&eacute;e</h3>
+
+<p>Une date de cl&ocirc;ture estim&eacute;e <em>future</em> n'a aucun sens pour un lead historique&nbsp;: la r&egrave;gle n'a pas
+&eacute;t&eacute; con&ccedil;ue pour de la reprise de donn&eacute;es. Le champ est donc laiss&eacute; vide&nbsp;; la r&egrave;gle ne se d&eacute;clenche
+pas sur un champ vide.</p>
+
+<p><strong>&Agrave; savoir&nbsp;:</strong> cette r&egrave;gle de validation ne comporte <strong>pas</strong> de test sur le champ de bypass
+utilisateur. Si le champ devait un jour &ecirc;tre aliment&eacute; avec des dates pass&eacute;es, il faudrait au pr&eacute;alable
+modifier la r&egrave;gle pour y int&eacute;grer le bypass.</p>
+
+<h2>Activit&eacute;s des leads</h2>
+
+<p>Les T&acirc;ches et &Eacute;v&eacute;nements rattach&eacute;s aux leads suivent les d&eacute;cisions transverses T6 de la page&nbsp;5&nbsp;:
+p&eacute;rim&egrave;tre h&eacute;rit&eacute; de celui des leads, r&eacute;currences exclues, champ de rattachement secondaire non mapp&eacute;,
+et <strong>normalisation du sujet des &eacute;v&eacute;nements sur deux valeurs</strong> &mdash; le point &agrave; faire confirmer
+par le m&eacute;tier.</p>
+
+<p>Les champs de statut et de priorit&eacute; des t&acirc;ches, ainsi que le type des &eacute;v&eacute;nements, sont traduits
+par le PicklistMapper.</p>

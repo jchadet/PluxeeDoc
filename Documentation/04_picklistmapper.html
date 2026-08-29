@@ -1,0 +1,263 @@
+<h1>4. PicklistMapper</h1>
+
+<p><code>PicklistMapper</code> est la seule portion de code &eacute;crite pour ce projet&nbsp;: une routine Java du
+r&eacute;f&eacute;rentiel Talend, partag&eacute;e par les deux jobs. Elle traduit les valeurs de listes de s&eacute;lection de
+l'org source vers l'org de destination.</p>
+
+<h2>4.1 Pourquoi une routine plut&ocirc;t que des conditions dans les jobs</h2>
+
+<p>Une correspondance de valeurs peut s'&eacute;crire directement dans un <code>tMap</code>, sous forme de
+conditions imbriqu&eacute;es. L'approche tient jusqu'&agrave; quelques champs&nbsp;; elle ne tient plus &agrave; l'&eacute;chelle de
+ce projet, o&ugrave; une trentaine de champs de listes de s&eacute;lection sont concern&eacute;s, certains portant plus de
+cinquante valeurs distinctes.</p>
+
+<p>Trois raisons ont motiv&eacute; l'externalisation&nbsp;:</p>
+
+<ul>
+  <li><strong>Volume.</strong> Des expressions conditionnelles de cette taille deviennent illisibles et
+      impossibles &agrave; relire.</li>
+  <li><strong>Maintenance.</strong> Corriger une correspondance ne doit pas obliger &agrave; ouvrir Talend.
+      Toutes les r&egrave;gles vivent dans un <strong>fichier CSV externe</strong>&nbsp;: on l'&eacute;dite, on relance, c'est tout.</li>
+  <li><strong>Contr&ocirc;le.</strong> C&ocirc;t&eacute; destination, la plupart des listes sont <em>restreintes</em>&nbsp;: une valeur
+      absente du jeu de valeurs provoque un rejet. Il faut donc savoir, avant d'ins&eacute;rer, quelles valeurs
+      sources n'ont pas de correspondance. C'est le r&ocirc;le du fichier d'audit.</li>
+</ul>
+
+<h2>4.2 Ce que la routine ne fait pas</h2>
+
+<p>Deux choix d'architecture &agrave; conna&icirc;tre&nbsp;:</p>
+
+<ul>
+  <li><strong>Elle ne cr&eacute;e jamais de valeur dans l'org de destination.</strong> Enrichir une liste de s&eacute;lection
+      est une op&eacute;ration de m&eacute;tadonn&eacute;es, &agrave; faire par d&eacute;ploiement <em>avant</em> la migration.
+      Le fichier d'audit sert pr&eacute;cis&eacute;ment &agrave; identifier ce qu'il faut d&eacute;ployer.</li>
+  <li><strong>Elle ne normalise ni la casse ni les accents.</strong> <code>Contacte</code> et <code>Contact&eacute;</code>
+      sont deux valeurs distinctes. Chaque variante r&eacute;ellement pr&eacute;sente dans les donn&eacute;es doit avoir sa
+      propre ligne dans le CSV. C'est volontaire&nbsp;: une normalisation automatique masquerait des
+      incoh&eacute;rences de donn&eacute;es qu'il vaut mieux voir.</li>
+</ul>
+
+<h2>4.3 Installation</h2>
+
+<ol>
+  <li>R&eacute;f&eacute;rentiel Talend &gt; <em>Code</em> &gt; <em>Routines</em> &gt; cr&eacute;er ou ouvrir <code>PicklistMapper</code>,
+      coller le contenu de la classe (conserver la d&eacute;claration <code>package routines;</code>), enregistrer.</li>
+  <li>V&eacute;rifier que la variable de contexte <code>resource_dir</code> pointe vers le r&eacute;pertoire contenant
+      le fichier de correspondance.</li>
+</ol>
+
+<h2>4.4 Format du fichier CSV</h2>
+
+<p>Encodage <strong>UTF-8</strong>, s&eacute;parateur <code>;</code>, une ligne d'en-t&ecirc;te (ignor&eacute;e).</p>
+
+<pre><code>object;source_field;source_value;target_value;target_field
+Lead;Status;Disqualifi&eacute;;Trash (Non-Converti)
+Lead;Status;Marketing Automation;Lead
+Account;Fonctions__c;Direction;DG
+Account;Fonctions__c;XX_DEFAULT_XX;Autre
+Lead;CauseNonQualifie__c;XX_DEFAULT_XX;</code></pre>
+
+<table>
+  <tr><th>Colonne</th><th>Contenu</th><th>R&egrave;gles</th></tr>
+  <tr><td><code>object</code></td><td>Nom d'API de l'objet <strong>source</strong></td><td>Jamais le libell&eacute;.</td></tr>
+  <tr><td><code>source_field</code></td><td>Nom d'API du champ <strong>source</strong></td>
+      <td>Toujours le champ source, m&ecirc;me quand la cible porte un autre nom &mdash; n&eacute;cessaire pour les cas
+          &laquo;&nbsp;une source, plusieurs cibles&nbsp;&raquo;.</td></tr>
+  <tr><td><code>source_value</code></td><td>Valeur telle que stock&eacute;e dans la source</td>
+      <td>Sensible &agrave; la casse et aux accents. <code>XX_DEFAULT_XX</code> est r&eacute;serv&eacute;.</td></tr>
+  <tr><td><code>target_value</code></td><td>Valeur &eacute;crite dans l'org de destination</td>
+      <td>Vide = &laquo;&nbsp;vider le champ&nbsp;&raquo; (retourne <code>null</code>).</td></tr>
+  <tr><td><code>target_field</code></td><td>Nom d'API du champ <strong>cible</strong>, quand il diff&egrave;re du champ source</td>
+      <td>Optionnelle. Vide = la cible porte le m&ecirc;me nom que la source.</td></tr>
+</table>
+
+<div style="border-left:4px solid #a33; padding:8px 12px; margin:16px 0; background:#fdf3f3;">
+<strong>Lecture par position, pas par en-t&ecirc;te.</strong> Ne jamais r&eacute;ordonner les quatre premi&egrave;res colonnes.
+Des colonnes libres (commentaires, volum&eacute;tries&hellip;) peuvent &ecirc;tre ajout&eacute;es <em>apr&egrave;s</em> la cinqui&egrave;me&nbsp;;
+elles sont ignor&eacute;es.
+</div>
+
+<h3>Construire le CSV depuis les donn&eacute;es, jamais depuis la liste de s&eacute;lection</h3>
+
+<p>La bonne source est un d&eacute;nombrement sur les donn&eacute;es r&eacute;elles&nbsp;:</p>
+
+<pre><code>SELECT champ, COUNT(Id) FROM objet GROUP BY champ</code></pre>
+
+<p>Les donn&eacute;es contiennent presque toujours plus de valeurs que la liste active&nbsp;: valeurs historiques,
+libell&eacute;s stock&eacute;s comme valeurs apr&egrave;s un renommage, variantes d'accentuation. Cas rencontr&eacute; sur ce
+projet&nbsp;: un champ de statut avec <strong>8&nbsp;valeurs actives</strong> mais <strong>28&nbsp;valeurs distinctes
+r&eacute;ellement stock&eacute;es</strong>.</p>
+
+<p>Le fichier de correspondance fourni par le m&eacute;tier en d&eacute;but de projet s'est r&eacute;v&eacute;l&eacute; incomplet sur ce
+point&nbsp;: il d&eacute;crivait les listes, pas les donn&eacute;es. Les correspondances ont &eacute;t&eacute; reconstruites &agrave; partir
+des d&eacute;nombrements r&eacute;els.</p>
+
+<h2>4.5 API</h2>
+
+<table>
+  <tr><th>M&eacute;thode</th><th>Usage</th></tr>
+  <tr><td><code>load(path)</code></td>
+      <td>Charge le CSV en <strong>rempla&ccedil;ant</strong> tout. &Agrave; appeler dans <code>tPreJob &gt; tJava</code>.
+          L&egrave;ve une exception si le fichier est illisible &mdash; le job s'arr&ecirc;te, comportement voulu.</td></tr>
+  <tr><td><code>loadMore(path)</code></td>
+      <td>Charge un CSV <strong>en plus</strong> de l'existant (organisation &laquo;&nbsp;un fichier par objet&nbsp;&raquo;).</td></tr>
+  <tr><td><code>translate(object, field, value)</code></td>
+      <td>Traduit vers un champ cible de m&ecirc;me nom. Retourne la valeur cible ou <code>null</code>.</td></tr>
+  <tr><td><code>translate(object, field, value, defaultValue)</code></td>
+      <td>Idem, avec un filet de s&eacute;curit&eacute; si ni correspondance ni d&eacute;faut CSV.</td></tr>
+  <tr><td><code>translateTo(object, field, value, targetField)</code></td>
+      <td>Traduit vers un champ cible <strong>diff&eacute;rent</strong> du champ source. Base des cibles multiples et des cascades.</td></tr>
+  <tr><td><code>dumpUnmapped(path)</code></td>
+      <td>&Eacute;crit le fichier d'audit et affiche le r&eacute;sum&eacute; par champ en console. &Agrave; appeler dans <code>tPostJob &gt; tJava</code>.</td></tr>
+  <tr><td><code>getSummary()</code></td><td>Retourne le r&eacute;sum&eacute; par champ sans &eacute;crire de fichier.</td></tr>
+  <tr><td><code>setDebug(boolean)</code></td>
+      <td>Trace en console chaque traduction. &Agrave; r&eacute;server aux petits volumes de test.</td></tr>
+  <tr><td><code>DEFAULT_KEY</code></td><td>Constante publique valant <code>"XX_DEFAULT_XX"</code>.</td></tr>
+</table>
+
+<h2>4.6 Ordre de r&eacute;solution</h2>
+
+<p>Une ligne dont <code>source_value</code> vaut <code>XX_DEFAULT_XX</code> d&eacute;finit la <strong>valeur par d&eacute;faut du
+champ</strong>&nbsp;: toute valeur source non list&eacute;e re&ccedil;oit cette cible.</p>
+
+<ol>
+  <li><strong>Correspondance exacte</strong> <code>objet | champ | valeur</code> &mdash; une cible vide est retourn&eacute;e comme <code>null</code>.</li>
+  <li><strong>D&eacute;faut du champ d&eacute;clar&eacute; dans le CSV</strong> &mdash; <em>le CSV prime toujours sur l'argument</em>.</li>
+  <li><strong>Argument <code>defaultValue</code></strong> de la m&eacute;thode.</li>
+  <li><strong><code>null</code></strong>, et la valeur est enregistr&eacute;e comme non mapp&eacute;e.</li>
+</ol>
+
+<p>Les cas 2 et 3 sont enregistr&eacute;s comme &laquo;&nbsp;defaut&nbsp;&raquo; dans l'audit&nbsp;: un d&eacute;faut n'est jamais silencieux.</p>
+
+<p><strong>Collision.</strong> Si une valeur source vaut litt&eacute;ralement <code>XX_DEFAULT_XX</code>, un avertissement
+est &eacute;mis une fois par champ et la valeur est trait&eacute;e comme une valeur normale.</p>
+
+<h3>Strat&eacute;gie sur les valeurs par d&eacute;faut</h3>
+
+<p>Le d&eacute;faut est un <strong>choix explicite par champ</strong>, pas un r&eacute;flexe&nbsp;:</p>
+
+<ul>
+  <li><strong>Champ porteur de sens m&eacute;tier</strong> (statut, raisons, fonctions&hellip;) &rarr; pas de ligne de d&eacute;faut.
+      Chaque valeur inconnue doit remonter dans l'audit et &ecirc;tre tranch&eacute;e.</li>
+  <li><strong>Champ secondaire</strong> o&ugrave; &laquo;&nbsp;Autre&nbsp;&raquo; est une r&eacute;ponse honn&ecirc;te &rarr; ligne de d&eacute;faut assum&eacute;e,
+      surveill&eacute;e via l'audit.</li>
+  <li>Ne poser un d&eacute;faut qu'apr&egrave;s avoir fait le d&eacute;nombrement du champ.</li>
+  <li>Sur un champ cible <strong>restreint</strong>, toute valeur produite &mdash; d&eacute;faut compris &mdash; doit exister dans
+      le jeu de valeurs, sinon rejet &agrave; l'insertion.</li>
+</ul>
+
+<h2>4.7 Les trois modes d'usage</h2>
+
+<h3>Mode 1 &mdash; traduction simple</h3>
+
+<p>Le cas courant&nbsp;: une valeur source devient une valeur cible, sur un champ de m&ecirc;me nom.</p>
+
+<pre><code>PicklistMapper.translate("Lead", "Status", row1.Status)</code></pre>
+
+<h3>Mode 2 &mdash; valeur par d&eacute;faut</h3>
+
+<p>Une ligne <code>XX_DEFAULT_XX</code> dans le CSV couvre les valeurs vides et les valeurs futures
+non encore list&eacute;es.</p>
+
+<pre><code>Lead;Fonctions__c;XX_DEFAULT_XX;Autre</code></pre>
+
+<h3>Mode 3 &mdash; cible multiple et cascades de listes d&eacute;pendantes</h3>
+
+<div style="border-left:4px solid #666; padding:8px 12px; margin:16px 0; background:#f7f7f7;">
+<strong>Ces lignes ne d&eacute;crivent pas une traduction de valeur.</strong> Elles expriment une <em>r&egrave;gle structurelle</em>
+de l'org de destination&nbsp;: la valeur qu'un champ parent doit porter pour qu'une valeur de champ enfant
+soit ins&eacute;rable. Le d&eacute;clencheur est le m&ecirc;me &mdash; une valeur source &mdash; d'o&ugrave; le fichier commun&nbsp;;
+mais l'intention est diff&eacute;rente. Ce n'est pas &laquo;&nbsp;X devient Y&nbsp;&raquo;, c'est
+&laquo;&nbsp;quand la source vaut X, ce champ-l&agrave; doit valoir Y pour que l'insertion passe&nbsp;&raquo;.
+</div>
+
+<p><strong>Cas 1 &mdash; cascade de listes d&eacute;pendantes.</strong> Dans l'org de destination,
+<code>Famille_de_produit__c</code> contr&ocirc;le <code>Produit__c</code>, qui contr&ocirc;le <code>Marche__c</code>.
+Une valeur de march&eacute; n'est ins&eacute;rable que si les deux parents portent les bonnes valeurs &mdash; or ces
+champs parents n'existent pas c&ocirc;t&eacute; source. Une seule valeur source doit donc alimenter trois champs cibles&nbsp;:</p>
+
+<pre><code>object;source_field;source_value;target_value;target_field
+Opportunity;Marche__c;Interne;STIMI;
+Opportunity;Marche__c;Interne;CCI;Produit__c
+Opportunity;Marche__c;Interne;Gift Incentive;Famille_de_produit__c</code></pre>
+
+<pre><code>// sortie Marche__c
+PicklistMapper.translate("Opportunity","Marche__c",row1.Marche__c)
+// sortie Produit__c
+PicklistMapper.translateTo("Opportunity","Marche__c",row1.Marche__c,"Produit__c")
+// sortie Famille_de_produit__c
+PicklistMapper.translateTo("Opportunity","Marche__c",row1.Marche__c,"Famille_de_produit__c")</code></pre>
+
+<p>Une valeur source non list&eacute;e retourne <code>null</code> sur les trois champs&nbsp;: aucune cascade partielle
+n'est pos&eacute;e, le trio reste coh&eacute;rent.</p>
+
+<p><strong>Cas 2 &mdash; une source alimentant plusieurs cibles ind&eacute;pendantes.</strong> M&ecirc;me m&eacute;canisme, sans
+notion de d&eacute;pendance. Exemple r&eacute;el sur le Lead&nbsp;: le champ d'origine alimente trois champs de
+qualification distincts, une ligne de CSV par champ cible.</p>
+
+<div style="border-left:4px solid #a33; padding:8px 12px; margin:16px 0; background:#fdf3f3;">
+<strong>Limite connue.</strong> Les lignes d'une m&ecirc;me cascade sont <strong>ind&eacute;pendantes</strong> dans le fichier&nbsp;:
+rien ne garantit qu'elles soient maintenues ensemble. Modifier la ligne enfant sans les lignes parentes
+produit un rejet Salesforce peu explicite (<code>INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST</code>).
+<strong>R&egrave;gle&nbsp;: toute modification d'une cascade se fait sur les trois lignes &agrave; la fois.</strong>
+</div>
+
+<h2>4.8 Le fichier d'audit</h2>
+
+<p>&Eacute;crit en fin de job par <code>dumpUnmapped</code>. Format&nbsp;:</p>
+
+<pre><code>object;field;source_value;type</code></pre>
+
+<table>
+  <tr><th>Type</th><th>Signification</th><th>Que faire</th></tr>
+  <tr><td><code>unmapped</code></td>
+      <td>Valeur rencontr&eacute;e sans correspondance ni d&eacute;faut. R&eacute;sultat&nbsp;: <code>null</code>.</td>
+      <td>Ajouter une ligne au CSV, d&eacute;cider un d&eacute;faut, ou cr&eacute;er la valeur cible par d&eacute;ploiement de m&eacute;tadonn&eacute;es.</td></tr>
+  <tr><td><code>defaut</code></td>
+      <td>Valeur pass&eacute;e par un d&eacute;faut.</td>
+      <td>Surveiller&nbsp;: un volume anormal signale souvent une valeur mal orthographi&eacute;e ou un cas m&eacute;tier oubli&eacute;.</td></tr>
+</table>
+
+<p>Les entr&eacute;es sont d&eacute;doublonn&eacute;es&nbsp;: le fichier liste des <strong>valeurs distinctes</strong>, pas un d&eacute;compte
+de lignes trait&eacute;es. Le r&eacute;sum&eacute; console de fin de job donne, par champ, le nombre de valeurs distinctes
+inconnues et pass&eacute;es par le d&eacute;faut.</p>
+
+<p><strong>Ce fichier est un livrable de run</strong>, pas un artefact de mise au point&nbsp;: il fait partie des
+quatre contr&ocirc;les d&eacute;crits en page&nbsp;8.</p>
+
+<h2>4.9 Branchement dans les jobs</h2>
+
+<pre><code>tPreJob &mdash;OnComponentOk&rarr; tJava :
+    PicklistMapper.load(context.resource_dir + "/picklist_mapping.csv");
+    // PicklistMapper.setDebug(true);   // test uniquement
+
+tMap (expressions de sortie) :
+    PicklistMapper.translate("Lead", "Status", row1.Status)
+
+tPostJob &rarr; tJava :
+    PicklistMapper.dumpUnmapped(context.resource_dir + "/picklist_unmapped.csv");</code></pre>
+
+<h2>4.10 Pi&egrave;ges connus</h2>
+
+<table>
+  <tr><th>Pi&egrave;ge</th><th>Cons&eacute;quence</th><th>Parade</th></tr>
+  <tr><td>&Eacute;tat <code>static</code> partag&eacute; par JVM</td>
+      <td>Avec des sous-jobs <code>tRunJob</code> dans la m&ecirc;me JVM, un <code>load()</code> &eacute;crase ce qu'un autre a charg&eacute;.</td>
+      <td>Sans objet ici (chaque job = une JVM). En cas d'orchestration par job parent&nbsp;: charger une seule
+          fois au parent, ou utiliser <code>loadMore</code>.</td></tr>
+  <tr><td>Noms d'API, pas libell&eacute;s</td>
+      <td>Les correspondances ne matchent pas.</td>
+      <td>SOQL lit et l'insertion &eacute;crit le nom d'API des valeurs.</td></tr>
+  <tr><td>S&eacute;parateur <code>;</code></td>
+      <td>Une valeur contenant un point-virgule casserait l'analyse du fichier.</td>
+      <td>Aucun cas rencontr&eacute; &agrave; ce jour&nbsp;; changer de s&eacute;parateur si le cas se pr&eacute;sente.</td></tr>
+  <tr><td>Encodage</td>
+      <td>Un CSV enregistr&eacute; en ANSI/latin-1 fait &eacute;chouer silencieusement les correspondances sur les valeurs accentu&eacute;es.</td>
+      <td>UTF-8 obligatoire.</td></tr>
+  <tr><td>R&eacute;ordonnancement des colonnes</td>
+      <td>Lecture par position&nbsp;: tout d&eacute;cale.</td>
+      <td>Ne jamais d&eacute;placer les quatre premi&egrave;res colonnes.</td></tr>
+  <tr><td>Mode debug laiss&eacute; actif</td>
+      <td>Une ligne de console par traduction&nbsp;: ex&eacute;cution ralentie, sortie illisible.</td>
+      <td>Laisser <code>setDebug</code> comment&eacute; hors phase de test.</td></tr>
+</table>

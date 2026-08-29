@@ -1,0 +1,167 @@
+<h1>1. Architecture &amp; p&eacute;rim&egrave;tre</h1>
+
+<p>Cette page d&eacute;crit les deux orgs mises en relation, les objets concern&eacute;s, et l'ordre dans lequel
+les traitements doivent &ecirc;tre lanc&eacute;s. C'est la vue d'ensemble &agrave; avoir avant d'ouvrir un job.</p>
+
+<h2>1.1 Les deux orgs et leurs connexions Talend</h2>
+
+<p>Le r&eacute;f&eacute;rentiel Talend porte <strong>deux connexions Salesforce</strong>, d&eacute;finies une fois et r&eacute;utilis&eacute;es
+par tous les composants des deux jobs.</p>
+
+<table>
+  <tr><th>Connexion</th><th>R&ocirc;le</th><th>Acc&egrave;s</th><th>Objets expos&eacute;s dans le r&eacute;f&eacute;rentiel</th></tr>
+  <tr>
+    <td><code>GladyProd</code></td>
+    <td>Org <strong>source</strong></td>
+    <td>Lecture seule. Aucun champ, aucune r&egrave;gle n'a &eacute;t&eacute; cr&eacute;&eacute; ou modifi&eacute; sur cette org.</td>
+    <td>AssociationContactImplementation__c, Event, Implementation__c, Lead, Opportunity, Quote, QuoteLineItem, Task</td>
+  </tr>
+  <tr>
+    <td>Org de <strong>destination</strong></td>
+    <td>Cible des insertions et source des r&eacute;solutions d'Id</td>
+    <td>&Eacute;criture. Re&ccedil;oit les m&eacute;tadonn&eacute;es de migration (champ <code>IdGlady__c</code>, r&eacute;f&eacute;rentiel NAF, valeurs de listes, Permission Set).</td>
+    <td>Account, AssociationContactImplementation__c, Code_NAF__c, Contact, Event, Implementation__c, Lead, Opportunity, RecordType, SBQQ__Quote__c, SBQQ__QuoteLine__c, Task</td>
+  </tr>
+</table>
+
+<div style="border-left:4px solid #666; padding:8px 12px; margin:16px 0; background:#f7f7f7;">
+<strong>&#128206; Capture &agrave; ins&eacute;rer ici</strong> &mdash; <code>Capture d'&eacute;cran 2026-08-28 145811.png</code><br/>
+<em>L&eacute;gende&nbsp;: arborescence des m&eacute;tadonn&eacute;es Salesforce dans le r&eacute;f&eacute;rentiel Talend &mdash; les deux connexions
+et les objets rattach&eacute;s &agrave; chacune.</em>
+</div>
+
+<h3>R&egrave;gle de bascule d'environnement</h3>
+
+<p>Pour pointer vers une autre org de destination (autre sandbox, ou production), il faut
+<strong>modifier la connexion existante</strong> &mdash; changer l'identifiant utilisateur, le mot de passe et le jeton &mdash;
+et surtout <strong>ne pas en cr&eacute;er une seconde</strong>.</p>
+
+<p>Les composants des jobs r&eacute;f&eacute;rencent la connexion par son identit&eacute; dans le r&eacute;f&eacute;rentiel. Cr&eacute;er une
+connexion parall&egrave;le obligerait &agrave; rouvrir chacun des 25&nbsp;composants Salesforce des deux jobs pour le
+faire pointer ailleurs. Modifier la connexion en place propage le changement automatiquement.</p>
+
+<h2>1.2 Objets migr&eacute;s</h2>
+
+<table>
+  <tr><th>Objet source</th><th>Objet de destination</th><th>Job</th><th>Rattach&eacute; &agrave;</th></tr>
+  <tr><td>Lead</td><td>Lead</td><td>Lead</td><td>&mdash; (racine)</td></tr>
+  <tr><td>Task</td><td>Task</td><td>Lead</td><td>Lead migr&eacute;, via <code>WhoId</code></td></tr>
+  <tr><td>Event</td><td>Event</td><td>Lead</td><td>Lead migr&eacute;, via <code>WhoId</code></td></tr>
+  <tr><td>Opportunity</td><td>Opportunity</td><td>Oppo/Devis</td><td>Compte migr&eacute;, via <code>AccountId</code></td></tr>
+  <tr><td>Implementation__c</td><td>Implementation__c</td><td>Oppo/Devis</td><td>Opportunit&eacute; migr&eacute;e</td></tr>
+  <tr><td>AssociationContactImplementation__c</td><td>AssociationContactImplementation__c</td><td>Oppo/Devis</td><td>Impl&eacute;mentation migr&eacute;e + Contact migr&eacute;</td></tr>
+  <tr><td>Task</td><td>Task</td><td>Oppo/Devis</td><td>Opportunit&eacute; ou Impl&eacute;mentation migr&eacute;e, via <code>WhatId</code></td></tr>
+  <tr><td>Event</td><td>Event</td><td>Oppo/Devis</td><td>Opportunit&eacute; ou Impl&eacute;mentation migr&eacute;e, via <code>WhatId</code></td></tr>
+  <tr><td>Quote</td><td><code>SBQQ__Quote__c</code></td><td>Oppo/Devis</td><td>Compte + Opportunit&eacute; + Contact migr&eacute;s</td></tr>
+</table>
+
+<p>Le passage de <code>Quote</code> (objet standard source) &agrave; <code>SBQQ__Quote__c</code> (objet CPQ de destination)
+est le seul changement de type d'objet de la migration.</p>
+
+<h2>1.3 La cl&eacute; de rapprochement inter-orgs</h2>
+
+<p>Les Id Salesforce ne sont pas transposables d'une org &agrave; l'autre. Tout le rattachement des enregistrements
+repose donc sur un champ ajout&eacute; dans l'org de destination&nbsp;:</p>
+
+<table>
+  <tr><th>Champ</th><th>Org</th><th>Contenu</th><th>Usage</th></tr>
+  <tr>
+    <td><code>IdGlady__c</code></td>
+    <td>Destination</td>
+    <td>Id 18&nbsp;caract&egrave;res de l'enregistrement source</td>
+    <td>Cl&eacute; externe unique. Permet de retrouver l'&eacute;quivalent de destination d'un enregistrement source,
+        et sert de garde-fou contre les doublons au rejeu.</td>
+  </tr>
+  <tr>
+    <td><code>ID_18__c</code></td>
+    <td>Source</td>
+    <td>Formule <code>CASESAFEID(Id)</code></td>
+    <td>Requ&ecirc;table mais <strong>non ins&eacute;rable</strong> (c'est une formule). Sert de cl&eacute; de lecture c&ocirc;t&eacute; source, jamais de champ cible.</td>
+  </tr>
+</table>
+
+<div style="border-left:4px solid #a33; padding:8px 12px; margin:16px 0; background:#fdf3f3;">
+<strong>Point de vigilance.</strong> Ce champ est le pivot de toute la cha&icirc;ne. S'il n'est pas accessible en
+&eacute;criture pour l'utilisateur d'int&eacute;gration &mdash; champ d&eacute;ploy&eacute; sans droits au niveau du champ, par exemple &mdash;
+les jobs continuent de fonctionner et se terminent sans erreur, mais les rattachements des objets enfants
+ne se font plus. C'est un incident v&eacute;cu&nbsp;: il figure en t&ecirc;te des pr&eacute;requis du guide de reprise.
+</div>
+
+<h2>1.4 Ordre de migration et d&eacute;pendances</h2>
+
+<p>L'ordre n'est pas une pr&eacute;f&eacute;rence, c'est une contrainte de d&eacute;pendance. Chaque &eacute;tape a besoin
+que la pr&eacute;c&eacute;dente ait peupl&eacute; <code>IdGlady__c</code> dans l'org de destination.</p>
+
+<table>
+  <tr><th>#</th><th>Traitement</th><th>Produit</th><th>D&eacute;pend de</th></tr>
+  <tr><td>0</td><td><strong>Job Comptes / Contacts / Plateformes</strong><br/><em>hors p&eacute;rim&egrave;tre de ce document</em></td>
+      <td>Comptes et Contacts avec leur <code>IdGlady__c</code></td><td>&mdash;</td></tr>
+  <tr><td>1</td><td><code>MigrationPluxeeLead_v2</code></td>
+      <td>Leads, puis leurs T&acirc;ches et &Eacute;v&eacute;nements</td>
+      <td>&Eacute;tape&nbsp;0 (pour les lookups de conversion) et le r&eacute;f&eacute;rentiel des codes NAF</td></tr>
+  <tr><td>2</td><td><code>MigrationPluxeeOppoDevis</code></td>
+      <td>Opportunit&eacute;s &rarr; Impl&eacute;mentations &rarr; Associations &rarr; Activit&eacute;s &rarr; Devis</td>
+      <td>&Eacute;tape&nbsp;0 &mdash; d&eacute;pendance bloquante</td></tr>
+</table>
+
+<div style="border-left:4px solid #a33; padding:8px 12px; margin:16px 0; background:#fdf3f3;">
+<strong>Sans compte, rien ne se cr&eacute;e.</strong> L'opportunit&eacute; se rattache au compte, le devis &agrave; l'opportunit&eacute; et au compte,
+l'impl&eacute;mentation &agrave; l'opportunit&eacute;, l'association au contact. Si les comptes manquent dans l'org de destination,
+le job Opportunit&eacute;s/Devis s'ex&eacute;cute int&eacute;gralement et produit <strong>z&eacute;ro enregistrement</strong>, sans lever d'erreur
+&mdash; les rattachements se font par jointure interne, qui &eacute;carte silencieusement les orphelins.
+Le m&eacute;canisme est d&eacute;taill&eacute; en page&nbsp;2.
+</div>
+
+<h3>Ordre interne du job Opportunit&eacute;s / Devis</h3>
+
+<p>Le job encha&icirc;ne huit sous-jobs par des liens <code>OnSubjobOk</code>. L'ordre est impos&eacute; par la m&ecirc;me logique
+de d&eacute;pendance&nbsp;:</p>
+
+<ol>
+  <li><strong>Opportunit&eacute;s</strong> &mdash; rattach&eacute;es au compte de destination</li>
+  <li><strong>Table de correspondance des Opportunit&eacute;s</strong> &mdash; relue depuis l'org de destination (<code>idGlady;IdPluxee</code>)</li>
+  <li><strong>Impl&eacute;mentations</strong> &mdash; rattach&eacute;es &agrave; l'opportunit&eacute; via cette table</li>
+  <li><strong>Table de correspondance des Impl&eacute;mentations</strong></li>
+  <li><strong>Associations Contact&ndash;Impl&eacute;mentation</strong> &mdash; rattach&eacute;es &agrave; l'impl&eacute;mentation et au contact</li>
+  <li><strong>Fusion des deux tables de correspondance</strong> &mdash; produit la table de r&eacute;solution des <code>WhatId</code></li>
+  <li><strong>T&acirc;ches puis &Eacute;v&eacute;nements</strong> &mdash; rattach&eacute;s via cette table fusionn&eacute;e</li>
+  <li><strong>Devis</strong> &mdash; rattach&eacute;s au compte, &agrave; l'opportunit&eacute; et au contact</li>
+</ol>
+
+<div style="border-left:4px solid #666; padding:8px 12px; margin:16px 0; background:#f7f7f7;">
+<strong>&#128206; Capture &agrave; ins&eacute;rer ici</strong> &mdash; <code>Job MigrationPluxeeOppoDevis.png</code><br/>
+<em>L&eacute;gende&nbsp;: vue d'ensemble du job Opportunit&eacute;s/Devis. Les huit blocs correspondent aux huit sous-jobs
+ci-dessus&nbsp;; les liens verts &agrave; gauche mat&eacute;rialisent l'encha&icirc;nement <code>OnSubjobOk</code>.</em>
+</div>
+
+<h2>1.5 Filtres de p&eacute;rim&egrave;tre appliqu&eacute;s</h2>
+
+<p>Vue de synth&egrave;se. Les clauses compl&egrave;tes et leur justification condition par condition figurent en page&nbsp;3.</p>
+
+<table>
+  <tr><th>Objet</th><th>Restriction appliqu&eacute;e</th><th>Nature</th></tr>
+  <tr><td>Lead</td><td>Hors record types &laquo;&nbsp;Enseigne&nbsp;&raquo;&nbsp;; e-mail et identifiant fonctionnel renseign&eacute;s&nbsp;; non convertis uniquement</td><td>M&eacute;tier + technique</td></tr>
+  <tr><td>T&acirc;ches et &Eacute;v&eacute;nements de Lead</td><td>M&ecirc;me p&eacute;rim&egrave;tre que les Leads&nbsp;; r&eacute;currences exclues</td><td>Technique</td></tr>
+  <tr><td>Opportunit&eacute;</td><td>Hors record types &laquo;&nbsp;Sodexo&nbsp;&raquo; et &laquo;&nbsp;Enseigne&nbsp;&raquo;&nbsp;; 12&nbsp;stades retenus sur 47</td><td>M&eacute;tier</td></tr>
+  <tr><td>T&acirc;ches et &Eacute;v&eacute;nements de la cha&icirc;ne commerciale</td><td>Rattach&eacute;s &agrave; une Opportunit&eacute; ou une Impl&eacute;mentation&nbsp;; r&eacute;currences exclues</td><td>Technique</td></tr>
+  <tr><td>Impl&eacute;mentation, Association, Devis</td><td>Aucun filtre explicite &mdash; born&eacute;s par le rattachement &agrave; leur parent migr&eacute;</td><td>Implicite</td></tr>
+</table>
+
+<h2>1.6 Outils et versions</h2>
+
+<table>
+  <tr><th>Composant</th><th>Version</th><th>Remarque</th></tr>
+  <tr><td>Talend Open Studio for Data Integration</td><td>8.0.1 &mdash; build 20211109_1610</td>
+      <td>L'ex&eacute;cutable a &eacute;t&eacute; obtenu par voie interne&nbsp;; la proc&eacute;dure d'obtention reste &agrave; formaliser (page&nbsp;9).</td></tr>
+  <tr><td>API Salesforce</td><td>52.0</td><td>Param&eacute;tr&eacute;e sur chacun des composants d'entr&eacute;e et de sortie.</td></tr>
+  <tr><td>Routine <code>PicklistMapper</code></td><td>5.0</td><td>Routine globale du r&eacute;f&eacute;rentiel, partag&eacute;e par les deux jobs.</td></tr>
+  <tr><td>Mode de requ&ecirc;te</td><td><code>Query</code> (API SOAP)</td>
+      <td>Uniforme sur les 25&nbsp;composants d'entr&eacute;e. Le mode Bulk n'est pas utilis&eacute;&nbsp;: plusieurs requ&ecirc;tes
+          s'appuient sur des sous-requ&ecirc;tes et des filtres sur champs parents, que la Bulk API ne prend pas en charge.</td></tr>
+</table>
+
+<div style="border-left:4px solid #666; padding:8px 12px; margin:16px 0; background:#f7f7f7;">
+<strong>&#128206; Capture &agrave; ins&eacute;rer ici</strong> &mdash; <code>Capture d'&eacute;cran 2026-08-28 145434.png</code><br/>
+<em>L&eacute;gende&nbsp;: le r&eacute;f&eacute;rentiel Talend &mdash; les deux jobs, les contextes, et la routine <code>PicklistMapper</code>
+sous <em>Code &gt; Routines globales</em>.</em>
+</div>

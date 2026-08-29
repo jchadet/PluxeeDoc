@@ -1,0 +1,257 @@
+<h1>3. Requ&ecirc;tes et p&eacute;rim&egrave;tre migr&eacute;</h1>
+
+<p>Les jobs contiennent 25&nbsp;requ&ecirc;tes SOQL. Elles n'ont pas toutes le m&ecirc;me r&ocirc;le, et seule une minorit&eacute;
+d&eacute;finit ce qui est r&eacute;ellement migr&eacute;. Cette page les s&eacute;pare, explique les clauses qui comptent,
+et indique o&ugrave; intervenir pour modifier un p&eacute;rim&egrave;tre.</p>
+
+<h2>3.1 Les trois r&ocirc;les des requ&ecirc;tes</h2>
+
+<table>
+  <tr><th>R&ocirc;le</th><th>Ce que la requ&ecirc;te d&eacute;finit</th><th>Org interrog&eacute;e</th><th>Nombre</th></tr>
+  <tr>
+    <td><strong>Requ&ecirc;tes de p&eacute;rim&egrave;tre</strong></td>
+    <td><em>Quels enregistrements</em> et <em>quels champs</em> sont migr&eacute;s. Ce sont les seules qui portent une d&eacute;cision.</td>
+    <td>Source</td><td>9</td>
+  </tr>
+  <tr>
+    <td><strong>Requ&ecirc;tes de r&eacute;solution d'Id</strong></td>
+    <td>Rien du p&eacute;rim&egrave;tre. Elles ram&egrave;nent les couples <code>Id</code>&nbsp;/&nbsp;<code>IdGlady__c</code> pour rattacher les enfants &agrave; leurs parents.</td>
+    <td>Destination</td><td>12</td>
+  </tr>
+  <tr>
+    <td><strong>Requ&ecirc;tes de r&eacute;f&eacute;rentiel</strong></td>
+    <td>R&eacute;solution d'un record type par son <code>DeveloperName</code>, ou chargement de la table des codes NAF.</td>
+    <td>Destination</td><td>4</td>
+  </tr>
+</table>
+
+<p>Les 16&nbsp;requ&ecirc;tes des deux derni&egrave;res cat&eacute;gories sont uniformes et sans enjeu&nbsp;: elles sont regroup&eacute;es
+en fin de page. <strong>Les 9&nbsp;premi&egrave;res sont l'objet de cette page.</strong></p>
+
+<h2>3.2 Tableau de bord du p&eacute;rim&egrave;tre</h2>
+
+<table>
+  <tr><th>Objet source</th><th>Job</th><th>Composant</th><th>Restriction</th></tr>
+  <tr><td>Lead</td><td>Lead</td><td><code>tSalesforceInput_1</code> &mdash; <em>SourceLead</em></td><td>4 conditions</td></tr>
+  <tr><td>Task (de Lead)</td><td>Lead</td><td><code>tSalesforceInput_2</code> &mdash; <em>SourceTasks</em></td><td>sous-requ&ecirc;te Lead + r&eacute;currences exclues</td></tr>
+  <tr><td>Event (de Lead)</td><td>Lead</td><td><code>tSalesforceInput_5</code> &mdash; <em>Event</em></td><td>sous-requ&ecirc;te Lead + r&eacute;currences exclues</td></tr>
+  <tr><td>Opportunity</td><td>Oppo/Devis</td><td><code>tSalesforceInput_1</code> &mdash; <em>Opportunity</em></td><td>2 record types exclus + 12 stades retenus</td></tr>
+  <tr><td>Implementation__c</td><td>Oppo/Devis</td><td><code>tSalesforceInput_7</code></td><td><strong>aucune</strong> &mdash; p&eacute;rim&egrave;tre implicite</td></tr>
+  <tr><td>AssociationContactImplementation__c</td><td>Oppo/Devis</td><td><code>tSalesforceInput_9</code></td><td><strong>aucune</strong> &mdash; p&eacute;rim&egrave;tre implicite</td></tr>
+  <tr><td>Task (commerciale)</td><td>Oppo/Devis</td><td><code>tSalesforceInput_5</code></td><td>type de parent + r&eacute;currences exclues</td></tr>
+  <tr><td>Event (commercial)</td><td>Oppo/Devis</td><td><code>tSalesforceInput_6</code></td><td>type de parent + r&eacute;currences exclues</td></tr>
+  <tr><td>Quote</td><td>Oppo/Devis</td><td><code>tSalesforceInput_13</code></td><td><strong>aucune</strong> &mdash; p&eacute;rim&egrave;tre implicite</td></tr>
+</table>
+
+<h2>3.3 Lead &mdash; les quatre conditions</h2>
+
+<table>
+  <tr><th>Condition</th><th>Raison</th><th>Nature</th></tr>
+  <tr><td><code>Email != ''</code></td>
+      <td>Un lead sans adresse e-mail ne passe pas les contr&ocirc;les de l'org de destination&nbsp;; il serait syst&eacute;matiquement rejet&eacute;.</td>
+      <td>Technique</td></tr>
+  <tr><td><code>uID__c != ''</code></td>
+      <td>&Eacute;carte les enregistrements sans identifiant fonctionnel c&ocirc;t&eacute; source &mdash; enregistrements techniques ou incomplets.</td>
+      <td>Technique</td></tr>
+  <tr><td><code>NOT RecordType.Name LIKE '%Enseigne%'</code></td>
+      <td>D&eacute;cision m&eacute;tier valid&eacute;e&nbsp;: le p&eacute;rim&egrave;tre de la migration est commercial, les enseignes en sont exclues.
+          C'est <strong>le filtre le plus structurant</strong> des deux jobs.</td>
+      <td>M&eacute;tier</td></tr>
+  <tr><td><code>IsConverted = false</code></td>
+      <td>Les leads convertis c&ocirc;t&eacute; source deviennent inaccessibles derri&egrave;re le Compte, le Contact et l'Opportunit&eacute;
+          issus de la conversion&nbsp;; ces trois objets sont migr&eacute;s par ailleurs. Voir page&nbsp;6.</td>
+      <td>M&eacute;tier + technique</td></tr>
+</table>
+
+<pre><code>SELECT Id, ConvertedContactId, ConvertedAccountId, ConvertedAccount.Name, ConvertedOpportunityId,
+       Company, Description, DoNotCall, Email, Fax, FirstName, LastName,
+       HasOptedOutOfEmail, HasOptedOutOfFax,
+       Street, City, State, PostalCode, Country,
+       AnnualRevenue, Industry, Jigsaw, LastTransferDate, LeadSource, MobilePhone,
+       NumberOfEmployees, OwnerId, Phone, Rating, Salutation, Status, Title, Website,
+       Batch_growth__c, CanalAcquisition__c, CauseNonQualifie__c, Code_APE__c, Code_Postal__c,
+       Company_ID__c, Concurrents__c, Date_de_cr_ation_dash__c, Emission_CauseDuPerdu__c,
+       Fonctions__c, Frequence_de_commande__c, Historique_perdu__c, ID_18__c, InteretProduits__c,
+       Marche__c, Note_growth_2__c, Note_growth__c, Owner_Role__c, Raison_du_besoin__c,
+       SIRET__c, S_quence_AS__c, Salon__c, SegmentationIncentive__c, Sizing__c, TypeLead__c,
+       linkedinUrl__c, uID__c, ConvertedDate, CreatedDate, LastModifiedDate,
+       utm_referrer__c, Origine__c, Taille_de_l_entreprise__c
+FROM   Lead
+WHERE  Email != ''
+  AND  uID__c != ''
+  AND  (NOT RecordType.Name LIKE '%Enseigne%')
+  AND  IsConverted = false
+ORDER BY CreatedDate DESC</code></pre>
+
+<div style="border-left:4px solid #666; padding:8px 12px; margin:16px 0; background:#f7f7f7;">
+<strong>Un filtre historique n'est plus appliqu&eacute;.</strong> Une exclusion sur l'origine du lead avait &eacute;t&eacute; discut&eacute;e
+avec le m&eacute;tier&nbsp;; elle ne portait que sur quelques enregistrements et n'a pas &eacute;t&eacute; conserv&eacute;e.
+L'exclusion des enseignes couvre l'essentiel du besoin. Choix assum&eacute;.
+</div>
+
+<h2>3.4 Activit&eacute;s de Lead &mdash; le p&eacute;rim&egrave;tre est h&eacute;rit&eacute;</h2>
+
+<p>Les T&acirc;ches et les &Eacute;v&eacute;nements reprennent <strong>&agrave; l'identique</strong> la clause du Lead, sous forme de
+sous-requ&ecirc;te. C'est volontaire&nbsp;: extraire des activit&eacute;s dont le lead ne sera pas migr&eacute; n'aurait aucun
+effet utile, puisque la jointure interne du <code>tMap</code> les &eacute;carterait ensuite sans trace.</p>
+
+<pre><code>SELECT Id, WhoId, Subject, ActivityDate, Status, Priority, Type, TaskSubtype,
+       Description, CreatedDate, LastModifiedDate
+FROM   Task
+WHERE  WhoId IN (SELECT Id FROM Lead
+                 WHERE Email != '' AND uID__c != ''
+                   AND (NOT RecordType.Name LIKE '%Enseigne%')
+                   AND IsConverted = false)
+  AND  IsRecurrence = false</code></pre>
+
+<p>La requ&ecirc;te des &Eacute;v&eacute;nements est identique, aux champs pr&egrave;s
+(<code>StartDateTime</code>, <code>EndDateTime</code> au lieu de <code>Status</code> et <code>Priority</code>).</p>
+
+<p><strong><code>IsRecurrence = false</code></strong> &mdash; les activit&eacute;s r&eacute;currentes sont exclues&nbsp;: elles n'ont plus de
+sens hors du contexte utilisateur qui les a cr&eacute;&eacute;es, et leur reconstruction dans l'org de destination
+n'apporterait rien.</p>
+
+<div style="border-left:4px solid #a33; padding:8px 12px; margin:16px 0; background:#fdf3f3;">
+<strong>Toute modification de la clause du Lead doit &ecirc;tre report&eacute;e dans les deux sous-requ&ecirc;tes.</strong>
+Un &eacute;cart entre les trois produit des activit&eacute;s extraites puis &eacute;cart&eacute;es silencieusement, ou l'inverse&nbsp;:
+des leads migr&eacute;s sans leurs activit&eacute;s.
+</div>
+
+<h2>3.5 Opportunit&eacute; &mdash; deux exclusions et une liste de stades</h2>
+
+<table>
+  <tr><th>Condition</th><th>Raison</th><th>Nature</th></tr>
+  <tr><td><code>NOT RecordType.Name LIKE '%Sodexo%'</code></td><td>Hors p&eacute;rim&egrave;tre commercial.</td><td>M&eacute;tier</td></tr>
+  <tr><td><code>NOT RecordType.Name LIKE '%Enseigne%'</code></td><td>M&ecirc;me logique que pour le Lead.</td><td>M&eacute;tier</td></tr>
+  <tr><td><code>StageName IN (&hellip;)</code></td>
+      <td>12&nbsp;stades retenus sur les 47&nbsp;existants c&ocirc;t&eacute; source. Les autres ont &eacute;t&eacute; &eacute;cart&eacute;s par le m&eacute;tier.
+          Environ 14&nbsp;000 opportunit&eacute;s sont exclues de ce fait. Voir page&nbsp;7.</td>
+      <td>M&eacute;tier</td></tr>
+</table>
+
+<pre><code>SELECT Id, ID_18__c, CreatedDate, LastModifiedDate, Type, Type_de_produit__c,
+       TotalOpportunityQuantity, AccountId, OwnerId, Name, Amount, CloseDate, StageName,
+       Probability, LeadSource, ContractId, CampaignId, Pricebook2Id, IsPrivate, NextStep,
+       Marche__c, Marche2__c, Sizing__c, Description, Concurrents__c, EvenementsURSSAFCSE__c,
+       Frequence_de_commande__c, Loss_Reason__c, Nombre_de_beneficiaire__c, OrigineLead__c,
+       MinAmountRequired_Penalty__c, Raison_du_besoin__c, Budget_Confirmed__c,
+       Budget_de_fonctionnement__c, Discovery_Completed__c, Owner_Manager__c,
+       Interet_Produits__c, ROI_Analysis_Completed__c, Source__c,
+       Support_Ch_que_Cadeau__c, Support_Sodexo__c, SupportActuelTR__c, SupportAvantProjet__c,
+       RecordTypeId
+FROM   Opportunity
+WHERE  (NOT RecordType.Name LIKE '%Sodexo%')
+  AND  (NOT RecordType.Name LIKE '%Enseigne%')
+  AND  StageName IN ('Nouvelle opportunit&eacute;','Renouvellement en cours','RDV fait','R1 pris',
+                     'R1 annul&eacute;','Suivi R1','Closing','R2 et plus','Qualification',
+                     'N&eacute;gociation','Cl&ocirc;tur&eacute;e - Gagn&eacute;e','Cl&ocirc;tur&eacute;e - Perdue')</code></pre>
+
+<h2>3.6 Activit&eacute;s de la cha&icirc;ne commerciale</h2>
+
+<pre><code>WHERE (What.Type = 'Opportunity' OR What.Type = 'Implementation__c')
+  AND IsRecurrence = false</code></pre>
+
+<p>M&ecirc;me clause pour les T&acirc;ches et pour les &Eacute;v&eacute;nements. Les deux types de parent correspondent exactement
+aux deux tables de correspondance fusionn&eacute;es dans <code>idGlady_idPluxee_whatId.csv</code>&nbsp;:
+le p&eacute;rim&egrave;tre extrait et le p&eacute;rim&egrave;tre r&eacute;solvable co&iuml;ncident.</p>
+
+<h2>3.7 Le p&eacute;rim&egrave;tre implicite &mdash; trois objets sans clause</h2>
+
+<div style="border-left:4px solid #a33; padding:8px 12px; margin:16px 0; background:#fdf3f3;">
+<p><strong>Impl&eacute;mentations, Associations Contact&ndash;Impl&eacute;mentation et Devis sont extraits int&eacute;gralement&nbsp;:
+leurs requ&ecirc;tes n'ont aucune clause <code>WHERE</code>.</strong></p>
+<p>Leur p&eacute;rim&egrave;tre r&eacute;el est born&eacute; en aval, par la <strong>jointure interne</strong> sur leur parent&nbsp;:</p>
+<ul>
+  <li>une impl&eacute;mentation dont l'opportunit&eacute; n'a pas &eacute;t&eacute; migr&eacute;e est &eacute;cart&eacute;e&nbsp;;</li>
+  <li>une association dont l'impl&eacute;mentation ou le contact manque est &eacute;cart&eacute;e&nbsp;;</li>
+  <li>un devis dont le compte, l'opportunit&eacute; ou le contact manque est &eacute;cart&eacute;.</li>
+</ul>
+<p><strong>Deux cons&eacute;quences pratiques.</strong> D'abord, restreindre le p&eacute;rim&egrave;tre des opportunit&eacute;s restreint
+automatiquement celui des impl&eacute;mentations et des devis&nbsp;: la cascade est implicite, il n'y a rien &agrave;
+r&eacute;percuter. Ensuite, ces &eacute;carts <strong>n'apparaissent dans aucun fichier de rejet</strong>&nbsp;: seul l'&eacute;cart entre
+le volume extrait et le volume ins&eacute;r&eacute; les r&eacute;v&egrave;le. C'est l'objet du contr&ocirc;le&nbsp;n&deg;3 du guide de reprise.</p>
+</div>
+
+<table>
+  <tr><th>Objet</th><th>Requ&ecirc;te</th><th>Champs</th></tr>
+  <tr><td>Implementation__c</td><td><code>SELECT &hellip; FROM Implementation__c</code></td>
+      <td>~180 champs, dont <code>Opportunite__c</code> qui porte le rattachement. Liste exhaustive dans la documentation g&eacute;n&eacute;r&eacute;e par Talend.</td></tr>
+  <tr><td>AssociationContactImplementation__c</td><td><code>SELECT &hellip; FROM AssociationContactImplementation__c</code></td>
+      <td>21 champs, dont <code>Implementation__c</code> et <code>Administrateur__c</code> qui portent les deux rattachements.</td></tr>
+  <tr><td>Quote</td><td><code>SELECT &hellip; FROM Quote</code></td><td>20 champs, ci-dessous.</td></tr>
+</table>
+
+<pre><code>SELECT Id, AccountId, OpportunityId, ContactId, Status, ApprovalStatus__c,
+       BillingName, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry,
+       ShippingName, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry,
+       CreatedDate, LastModifiedDate
+FROM   Quote</code></pre>
+
+<h2>3.8 Les requ&ecirc;tes de r&eacute;solution d'Id</h2>
+
+<p>Douze requ&ecirc;tes, toutes sur l'org de destination, toutes b&acirc;ties sur le m&ecirc;me mod&egrave;le&nbsp;:</p>
+
+<pre><code>SELECT Id, IdGlady__c FROM &lt;Objet&gt; WHERE IdGlady__c != null</code></pre>
+
+<p>Elles ne d&eacute;finissent aucun p&eacute;rim&egrave;tre&nbsp;: elles constituent la table de correspondance entre l'Id source
+et l'Id de destination. Trois d'entre elles ram&egrave;nent des champs suppl&eacute;mentaires, consomm&eacute;s par le mapping&nbsp;:</p>
+
+<table>
+  <tr><th>Composant</th><th>Objet</th><th>Champs suppl&eacute;mentaires</th><th>Utilis&eacute;s pour</th></tr>
+  <tr><td>Oppo &mdash; <code>tSalesforceInput_12</code></td><td>Opportunity</td>
+      <td><code>SBQQ__OrderGroupID__c</code>, <code>SBQQ__Ordered__c</code>, <code>ValeurFaciale__c</code>,
+          <code>Dotation_par_benficiaire__c</code>, <code>Nombre_de_beneficiaires__c</code>,
+          <code>Nombre_de_titres_beneficiaire__c</code>, <code>Budget_estime__c</code></td>
+      <td>Report sur le Devis</td></tr>
+  <tr><td>Oppo &mdash; <code>tSalesforceInput_14</code></td><td>Account</td>
+      <td><code>SIRET__c</code>, <code>Code_NAF__c</code>, <code>Segment__c</code>, <code>ID_Pivotal__c</code></td>
+      <td>Report sur le Devis</td></tr>
+  <tr><td>Lead &mdash; <code>tSalesforceInput_3</code></td><td>Code_NAF__c</td>
+      <td><code>Code_NAF__c</code></td><td>R&eacute;solution du code APE (r&eacute;f&eacute;rentiel)</td></tr>
+</table>
+
+<p>Ces champs sont lus sur l'enregistrement <strong>de destination</strong>, pas sur la source&nbsp;:
+c'est un report d'information depuis le parent d&eacute;j&agrave; migr&eacute; vers son enfant.</p>
+
+<h2>3.9 Les valeurs cod&eacute;es en dur &agrave; v&eacute;rifier par org</h2>
+
+<div style="border-left:4px solid #a33; padding:8px 12px; margin:16px 0; background:#fdf3f3;">
+<p>Trois requ&ecirc;tes r&eacute;solvent un record type par son <code>DeveloperName</code>, &eacute;crit en dur.
+Si le nom n'existe pas dans l'org cible, la requ&ecirc;te ne remonte rien, la jointure &eacute;tant externe le
+job continue, et les enregistrements sont cr&eacute;&eacute;s avec le <strong>record type par d&eacute;faut</strong> &mdash; sans erreur.
+<strong>&Agrave; contr&ocirc;ler dans le Setup de chaque org cible avant tout run.</strong></p>
+</div>
+
+<table>
+  <tr><th>Job</th><th>Composant</th><th>Objet</th><th><code>DeveloperName</code> attendu</th></tr>
+  <tr><td>Lead</td><td><code>tSalesforceInput_7</code></td><td>Lead</td><td><code>Lead_Client</code></td></tr>
+  <tr><td>Oppo/Devis</td><td><code>tSalesforceInput_2</code></td><td>Opportunity</td><td><code>Opportunit_Client</code></td></tr>
+  <tr><td>Oppo/Devis</td><td><code>tSalesforceInput_8</code></td><td>Implementation__c</td><td><code>IMPLEMENTATION_CSE</code></td></tr>
+</table>
+
+<p>Un seul record type est utilis&eacute; par objet&nbsp;: tous les enregistrements migr&eacute;s re&ccedil;oivent le m&ecirc;me.
+Les devis partent sur le record type standard. Voir page&nbsp;5.</p>
+
+<h2>3.10 O&ugrave; modifier quoi</h2>
+
+<table>
+  <tr><th>Je veux&hellip;</th><th>Composant &agrave; modifier</th><th>Effet en cascade</th></tr>
+  <tr><td>&Eacute;largir ou restreindre le p&eacute;rim&egrave;tre des <strong>leads</strong></td>
+      <td>Job Lead, <code>tSalesforceInput_1</code></td>
+      <td><strong>Reporter la m&ecirc;me clause</strong> dans les sous-requ&ecirc;tes de <code>tSalesforceInput_2</code> et <code>_5</code>.</td></tr>
+  <tr><td>Migrer un <strong>champ de lead</strong> suppl&eacute;mentaire</td>
+      <td>Ajouter le champ au <code>SELECT</code> de <code>tSalesforceInput_1</code>, <em>puis</em> le mapper dans <code>tMap_1</code></td>
+      <td>Les deux op&eacute;rations sont n&eacute;cessaires. L'une sans l'autre est silencieuse.</td></tr>
+  <tr><td>&Eacute;largir ou restreindre le p&eacute;rim&egrave;tre des <strong>opportunit&eacute;s</strong></td>
+      <td>Job Oppo, <code>tSalesforceInput_1</code></td>
+      <td>Se r&eacute;percute automatiquement sur les impl&eacute;mentations, associations, activit&eacute;s et devis.</td></tr>
+  <tr><td>Ajouter ou retirer un <strong>stade d'opportunit&eacute;</strong></td>
+      <td>Clause <code>StageName IN (&hellip;)</code></td>
+      <td>V&eacute;rifier que le stade dispose d'une correspondance dans le fichier CSV du PicklistMapper (page&nbsp;4).</td></tr>
+  <tr><td>Changer d'<strong>org de destination</strong></td>
+      <td>La connexion Salesforce du r&eacute;f&eacute;rentiel, pas les requ&ecirc;tes</td>
+      <td>Re-v&eacute;rifier les trois <code>DeveloperName</code> ci-dessus.</td></tr>
+  <tr><td>Restreindre pour un <strong>test</strong></td>
+      <td>Clause <code>WHERE</code> de la requ&ecirc;te de p&eacute;rim&egrave;tre, ou <code>LIMIT</code></td>
+      <td><strong>&Agrave; retirer imp&eacute;rativement avant un run r&eacute;el</strong> &mdash; check-list de la page&nbsp;8.</td></tr>
+</table>

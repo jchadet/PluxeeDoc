@@ -1,0 +1,230 @@
+<h1>5. D&eacute;cisions &amp; arbitrages &mdash; transverses</h1>
+
+<p>Cette page et les deux suivantes recensent les choix non triviaux de la migration.
+Elles r&eacute;pondent &agrave; la question &laquo;&nbsp;pourquoi est-ce fait comme &ccedil;a&nbsp;?&nbsp;&raquo; et, surtout,
+&laquo;&nbsp;qu'est-ce qu'il faut revoir avant la production&nbsp;?&nbsp;&raquo;.</p>
+
+<h2>5.1 Comment lire ces pages</h2>
+
+<p>Chaque arbitrage suit la m&ecirc;me grille&nbsp;:</p>
+
+<table>
+  <tr><td width="20%"><strong>Contexte</strong></td><td>Le probl&egrave;me rencontr&eacute;.</td></tr>
+  <tr><td><strong>D&eacute;cision</strong></td><td>Ce qui a &eacute;t&eacute; fait, et o&ugrave; c'est impl&eacute;ment&eacute;.</td></tr>
+  <tr><td><strong>Limite</strong></td><td>Ce que la d&eacute;cision co&ucirc;te, en clair.</td></tr>
+  <tr><td><strong>En production</strong></td><td>Ce qu'il faut reconsid&eacute;rer.</td></tr>
+</table>
+
+<p>Trois statuts qualifient le degr&eacute; de certitude&nbsp;:</p>
+
+<table>
+  <tr><td width="20%"><strong>Valid&eacute;</strong></td><td>Arbitr&eacute; avec le m&eacute;tier ou impos&eacute; par la plateforme.</td></tr>
+  <tr><td><strong>D&eacute;duit</strong></td><td>&Eacute;tabli par analyse des donn&eacute;es r&eacute;elles, sans validation formelle.</td></tr>
+  <tr><td><strong>&Agrave; confirmer</strong></td><td>Hypoth&egrave;se de travail, &agrave; faire trancher.</td></tr>
+</table>
+
+<h2>5.2 Synth&egrave;se des arbitrages</h2>
+
+<table>
+  <tr><th>#</th><th>Sujet</th><th>Statut</th><th>Page</th></tr>
+  <tr><td>T1</td><td>Bypass des r&egrave;gles de validation et Permission Set de migration</td><td>Valid&eacute;</td><td>5</td></tr>
+  <tr><td>T2</td><td>Record types &mdash; un seul par objet, r&eacute;solu par nom</td><td>Valid&eacute;</td><td>5</td></tr>
+  <tr><td>T3</td><td>Cl&eacute; externe <code>IdGlady__c</code></td><td>Valid&eacute;</td><td>5</td></tr>
+  <tr><td>T4</td><td>Conservation des dates d'audit</td><td>Valid&eacute;</td><td>5</td></tr>
+  <tr><td>T5</td><td>Propri&eacute;taire des enregistrements migr&eacute;s</td><td>D&eacute;duit</td><td>5</td></tr>
+  <tr><td>T6</td><td>Activit&eacute;s &mdash; p&eacute;rim&egrave;tre et normalisation du sujet</td><td>&Agrave; confirmer</td><td>5</td></tr>
+  <tr><td>T7</td><td>Rejets de qualit&eacute; de donn&eacute;es &mdash; hors p&eacute;rim&egrave;tre technique</td><td>Valid&eacute;</td><td>5</td></tr>
+  <tr><td>T8</td><td>Insertion sans upsert &mdash; cons&eacute;quences sur le rejeu</td><td>Valid&eacute;</td><td>5</td></tr>
+  <tr><td>L1&ndash;L9</td><td>Arbitrages sur le Lead</td><td>&mdash;</td><td>6</td></tr>
+  <tr><td>O1&ndash;O8</td><td>Arbitrages sur l'Opportunit&eacute;, l'Impl&eacute;mentation et le Devis</td><td>&mdash;</td><td>7</td></tr>
+</table>
+
+<h2>T1. Bypass des r&egrave;gles de validation et Permission Set de migration</h2>
+
+<p><strong>Contexte.</strong> Les r&egrave;gles de validation de l'org de destination sont con&ccedil;ues pour la saisie
+manuelle. Appliqu&eacute;es &agrave; des donn&eacute;es historiques qui n'y ont jamais &eacute;t&eacute; soumises, elles bloquent
+massivement l'import&nbsp;: environ 3&nbsp;700 rejets sur les seuls leads en recette (date de premi&egrave;re commande,
+format de t&eacute;l&eacute;phone, SIRET, type de soci&eacute;t&eacute;, longueur des noms). C&ocirc;t&eacute; opportunit&eacute;s, plusieurs r&egrave;gles
+exigent des champs qui <strong>n'ont aucune source</strong> &mdash; ils sont li&eacute;s &agrave; une restructuration produit
+post&eacute;rieure &agrave; l'org source&nbsp;: aucun mapping ne peut les remplir.</p>
+
+<p><strong>D&eacute;cision (valid&eacute;e).</strong> Un Permission Set d&eacute;di&eacute;, <code>Data Migration Users</code>, regroupe
+tous les contournements n&eacute;cessaires et est assign&eacute; &agrave; l'utilisateur d'int&eacute;gration&nbsp;:</p>
+
+<table>
+  <tr><th>&Eacute;l&eacute;ment</th><th>R&ocirc;le</th></tr>
+  <tr><td><code>Bypass_validation_rules__c</code> (champ utilisateur)</td><td>Neutralise les r&egrave;gles de validation personnalis&eacute;es Lead et Opportunit&eacute;.</td></tr>
+  <tr><td><code>Bypass duplicated rules</code> (champ utilisateur)</td><td>Neutralise les r&egrave;gles de doublons sur le Lead.</td></tr>
+  <tr><td><code>EditClosedOpportunity</code> (permission personnalis&eacute;e)</td><td>Autorise la modification d'opportunit&eacute;s ferm&eacute;es.</td></tr>
+</table>
+
+<p><strong>Limite.</strong> Le bypass <strong>masque</strong> les probl&egrave;mes plut&ocirc;t qu'il ne les r&eacute;sout&nbsp;: les
+enregistrements s'ins&egrave;rent, mais des champs restent vides ou mal format&eacute;s sans qu'aucune alerte ne le
+signale. Les fichiers de rejet ne remontent plus ces cas. Par ailleurs, le bypass ne couvre
+<strong>pas</strong> les contraintes de plateforme (date de conversion ant&eacute;rieure &agrave; la date de cr&eacute;ation,
+listes de s&eacute;lection restreintes, d&eacute;passement de longueur)&nbsp;: celles-l&agrave; exigent une correction dans
+le mapping ou dans les donn&eacute;es source.</p>
+
+<p><strong>En production.</strong></p>
+<ul>
+  <li>Assigner le Permission Set <strong>avant</strong> chaque run, le <strong>retirer apr&egrave;s</strong> pour restaurer
+      les contr&ocirc;les de saisie.</li>
+  <li>Pour am&eacute;liorer la qualit&eacute; des donn&eacute;es&nbsp;: d&eacute;sactiver le bypass, relancer, et traiter les rejets
+      un par un &mdash; nettoyage &agrave; la source ou enrichissement du mapping.</li>
+  <li>Si de nouvelles r&egrave;gles bloquent l'import, compl&eacute;ter <em>ce</em> Permission Set plut&ocirc;t que d'en cr&eacute;er un autre.</li>
+  <li><strong>&Agrave; compl&eacute;ter</strong>&nbsp;: la liste exhaustive des r&egrave;gles contourn&eacute;es et des champs laiss&eacute;s vides
+      n'est pas constitu&eacute;e (page&nbsp;9).</li>
+</ul>
+
+<h2>T2. Record types &mdash; un seul par objet, r&eacute;solu par son nom</h2>
+
+<p><strong>Contexte.</strong> L'Id technique d'un record type diff&egrave;re d'une org &agrave; l'autre&nbsp;: il ne peut pas
+&ecirc;tre repris tel quel. Sur les premi&egrave;res versions du job Lead, le record type n'&eacute;tait pas mapp&eacute; du tout&nbsp;:
+les leads prenaient le record type par d&eacute;faut de l'org de destination.</p>
+
+<p><strong>D&eacute;cision (valid&eacute;e).</strong> Tous les objets r&eacute;solvent leur record type par lookup sur le
+<code>DeveloperName</code>, cl&eacute; stable entre orgs. Un seul record type est utilis&eacute; par objet&nbsp;;
+les devis partent sur le record type standard. Les noms utilis&eacute;s figurent en page&nbsp;3.</p>
+
+<p><strong>Limite.</strong> Le nom est &eacute;crit en dur dans la requ&ecirc;te. S'il n'existe pas dans l'org cible,
+le lookup ne remonte rien, la jointure &eacute;tant externe le job continue, et le record type par d&eacute;faut
+s'applique &mdash; sans erreur.</p>
+
+<p><strong>En production.</strong> V&eacute;rifier les trois <code>DeveloperName</code> dans le Setup de l'org cible
+avant tout run. Si le mod&egrave;le de destination introduit plusieurs record types porteurs de logique
+m&eacute;tier (mises en page, listes restreintes par record type), le mapping devra &ecirc;tre conditionn&eacute;.</p>
+
+<h2>T3. La cl&eacute; externe <code>IdGlady__c</code></h2>
+
+<p><strong>Contexte.</strong> Aucun rattachement inter-orgs n'est possible sans une cl&eacute; commune.</p>
+
+<p><strong>D&eacute;cision (valid&eacute;e).</strong> Chaque objet migr&eacute; porte un champ <code>IdGlady__c</code> contenant
+l'Id 18&nbsp;caract&egrave;res de l'enregistrement source, d&eacute;clar&eacute; en cl&eacute; externe unique. Il sert
+&agrave; trois choses&nbsp;: rattacher les enfants &agrave; leurs parents, permettre le rejeu, et tracer l'origine
+de chaque enregistrement.</p>
+
+<p>C&ocirc;t&eacute; source, <code>ID_18__c</code> est une formule <code>CASESAFEID(Id)</code>&nbsp;: requ&ecirc;table, non ins&eacute;rable.
+Elle sert de cl&eacute; de lecture, jamais de champ cible.</p>
+
+<p><strong>Limite.</strong> L'unicit&eacute; de la cl&eacute; est ce qui prot&egrave;ge des doublons&nbsp;; c'est aussi ce qui fait
+&eacute;chouer le rejeu (voir T8). Sur le job Lead, le fichier de r&eacute;sultat a pr&eacute;sent&eacute; une colonne d'Id source
+vide lors de certaines ex&eacute;cutions&nbsp;; le contournement consiste &agrave; interroger directement l'org de
+destination&nbsp;:</p>
+
+<pre><code>SELECT Id, IdGlady__c FROM Lead WHERE IdGlady__c != null</code></pre>
+
+<p><strong>En production.</strong> V&eacute;rifier que le champ est d&eacute;ploy&eacute; <strong>et accessible en &eacute;criture</strong>
+pour l'utilisateur d'int&eacute;gration sur chacun des objets migr&eacute;s, avant le premier run. Un champ pr&eacute;sent
+mais sans droit d'&eacute;criture casse toute la cha&icirc;ne de rattachement en silence.</p>
+
+<h2>T4. Conservation des dates d'audit</h2>
+
+<p><strong>Contexte.</strong> Une migration qui perd les dates de cr&eacute;ation d'origine rend l'historique
+commercial inexploitable&nbsp;: toutes les opportunit&eacute;s appara&icirc;traient cr&eacute;&eacute;es le jour de la bascule.</p>
+
+<p><strong>D&eacute;cision (valid&eacute;e).</strong> <code>CreatedDate</code> et <code>LastModifiedDate</code> sont mapp&eacute;s
+depuis la source sur les objets qui le permettent. Cela requiert la permission
+<em>Set Audit Fields upon Record Creation</em> activ&eacute;e dans l'org de destination.</p>
+
+<p><strong>Limite.</strong> Les autres champs d'audit &mdash; <code>CreatedById</code>, <code>LastModifiedById</code>,
+<code>LastActivityDate</code>, <code>SystemModstamp</code> &mdash; ne sont pas repris&nbsp;: ils sont en lecture seule
+ou pointent vers des utilisateurs qui n'existent pas dans l'org de destination.</p>
+
+<p><strong>En production.</strong> V&eacute;rifier que la permission est bien active avant le run&nbsp;: sans elle,
+les dates sont silencieusement remplac&eacute;es par la date d'insertion.</p>
+
+<h2>T5. Propri&eacute;taire des enregistrements migr&eacute;s</h2>
+
+<p><strong>Contexte.</strong> Les propri&eacute;taires source sont des utilisateurs de l'org source&nbsp;;
+leurs Id n'ont pas d'&eacute;quivalent dans l'org de destination.</p>
+
+<p><strong>D&eacute;cision (d&eacute;duite).</strong> <code>OwnerId</code> n'est pas mapp&eacute;&nbsp;: tous les enregistrements migr&eacute;s
+appartiennent &agrave; l'utilisateur d'int&eacute;gration qui ex&eacute;cute le job.</p>
+
+<p><strong>Limite.</strong> Le portefeuille commercial n'est pas reconstitu&eacute;. Les r&egrave;gles de partage,
+les files d'attente et les rapports par propri&eacute;taire ne refl&eacute;teront pas la r&eacute;alit&eacute; d'avant migration.</p>
+
+<p><strong>En production.</strong> Si la reprise des propri&eacute;taires est souhait&eacute;e, elle suppose une table de
+correspondance entre les utilisateurs des deux orgs &mdash; &agrave; construire avec le m&eacute;tier. Le champ pourrait
+alors &ecirc;tre r&eacute;solu par lookup, sur le m&ecirc;me principe que les autres rattachements.</p>
+
+<h2>T6. Activit&eacute;s &mdash; p&eacute;rim&egrave;tre et normalisation du sujet</h2>
+
+<p><strong>Contexte.</strong> Les T&acirc;ches et &Eacute;v&eacute;nements sont rattach&eacute;s &agrave; leur parent par
+<code>WhoId</code> (Lead, Contact) ou <code>WhatId</code> (Opportunit&eacute;, Impl&eacute;mentation&hellip;).</p>
+
+<p><strong>D&eacute;cisions.</strong></p>
+
+<table>
+  <tr><th>Point</th><th>D&eacute;cision</th><th>Statut</th></tr>
+  <tr><td>P&eacute;rim&egrave;tre</td>
+      <td>Job Lead&nbsp;: activit&eacute;s de leads uniquement (<code>WhoId</code>). Job Oppo&nbsp;: activit&eacute;s d'opportunit&eacute;s
+          et d'impl&eacute;mentations (<code>WhatId</code>).</td><td>Valid&eacute;</td></tr>
+  <tr><td><code>WhatId</code> sur les activit&eacute;s de lead</td>
+      <td>Toujours vide c&ocirc;t&eacute; source &rarr; non mapp&eacute;.</td><td>Valid&eacute;</td></tr>
+  <tr><td>R&eacute;currences</td>
+      <td>Exclues (<code>IsRecurrence = false</code>)&nbsp;: elles n'ont plus de sens hors du contexte utilisateur d'origine.</td>
+      <td>Valid&eacute;</td></tr>
+  <tr><td><strong>Sujet des &Eacute;v&eacute;nements</strong></td>
+      <td><strong>Normalis&eacute; sur deux valeurs</strong>&nbsp;: le sujet source devient <code>RDV physique</code> s'il vaut
+          exactement cela, <code>RDV t&eacute;l/visio</code> dans <strong>tous les autres cas</strong>.</td>
+      <td><strong>&Agrave; confirmer</strong></td></tr>
+</table>
+
+<p><strong>Limite.</strong> La normalisation du sujet est une <strong>perte d'information r&eacute;elle</strong>&nbsp;:
+le libell&eacute; d'origine de chaque &eacute;v&eacute;nement est remplac&eacute;, et tout ce qui n'est pas un rendez-vous physique
+est &eacute;tiquet&eacute; comme un rendez-vous &agrave; distance, y compris les &eacute;v&eacute;nements qui ne sont pas des rendez-vous.
+Le champ <code>Type</code>, lui, est traduit normalement par le PicklistMapper.</p>
+
+<p><strong>En production.</strong> Faire confirmer par le m&eacute;tier que la r&eacute;duction &agrave; deux valeurs correspond
+bien au besoin. Sinon, conserver le sujet source tel quel, ou &eacute;tablir une correspondance plus fine
+via le PicklistMapper.</p>
+
+<p><strong>Constat utile.</strong> Les leads porteurs d'activit&eacute;s sont massivement des leads travaill&eacute;s
+manuellement, souvent sans adresse e-mail. Un filtre sur l'e-mail &eacute;limine donc une bonne partie de la
+population qui poss&egrave;de des t&acirc;ches &mdash; &agrave; garder en t&ecirc;te lors de l'interpr&eacute;tation des volumes d'activit&eacute;s.</p>
+
+<h2>T7. Rejets de qualit&eacute; de donn&eacute;es</h2>
+
+<p><strong>Contexte.</strong> Une partie des rejets ne rel&egrave;ve pas du mapping mais de la donn&eacute;e source&nbsp;:
+code APE absent, date de cl&ocirc;ture manquante, e-mail ou t&eacute;l&eacute;phone invalide, doublons, d&eacute;passements de
+longueur.</p>
+
+<p><strong>D&eacute;cision (valid&eacute;e).</strong> Ces rejets ne sont pas corrig&eacute;s c&ocirc;t&eacute; ETL. Un rapport de qualit&eacute;
+est produit &agrave; destination du m&eacute;tier, &agrave; partir des fichiers <code>_ko</code>, pour un nettoyage &agrave; la source.</p>
+
+<p><strong>Limite.</strong> Tant que la source n'est pas nettoy&eacute;e, ces enregistrements ne passeront pas &mdash;
+ou passeront avec des donn&eacute;es incompl&egrave;tes sous couvert du bypass.</p>
+
+<p><strong>En production.</strong> Pr&eacute;voir un nettoyage des donn&eacute;es source en amont, puis rafra&icirc;chir
+l'environnement de test avec les donn&eacute;es nettoy&eacute;es avant de rejouer. La typologie des rejets et leur
+r&eacute;partition entre technique et m&eacute;tier sont d&eacute;taill&eacute;es en page&nbsp;8.</p>
+
+<h2>T8. Insertion sans upsert &mdash; cons&eacute;quences sur le rejeu</h2>
+
+<p><strong>Contexte.</strong> La migration doit pouvoir &ecirc;tre relanc&eacute;e&nbsp;: pour un rattrapage des donn&eacute;es
+cr&eacute;&eacute;es depuis le dernier run, ou apr&egrave;s correction d'un mapping.</p>
+
+<p><strong>D&eacute;cision (valid&eacute;e).</strong> Les neuf composants de sortie sont en <code>INSERT</code>, pas en
+<code>UPSERT</code>. Le principe retenu est&nbsp;: <em>un enregistrement migr&eacute; une fois n'est pas migr&eacute; deux fois</em>.
+L'unicit&eacute; de <code>IdGlady__c</code> fait office de garde-fou.</p>
+
+<p><strong>Limite &mdash; &agrave; bien comprendre.</strong> Un second run sur le m&ecirc;me p&eacute;rim&egrave;tre ne produit pas un
+delta&nbsp;: il retente <strong>tous</strong> les enregistrements, et ceux d&eacute;j&agrave; migr&eacute;s repartent en
+<code>DUPLICATE_VALUE</code> dans les fichiers <code>_ko</code>. Le r&eacute;sultat est correct &mdash; aucun doublon n'est
+cr&eacute;&eacute; &mdash; mais les fichiers de rejet sont alors massivement peupl&eacute;s d'erreurs attendues, ce qui rend
+la lecture des vrais rejets d&eacute;licate.</p>
+
+<p><strong>En production.</strong> Deux options&nbsp;:</p>
+<ul>
+  <li><strong>Conserver l'insertion</strong> et restreindre le p&eacute;rim&egrave;tre du rattrapage par une clause de date
+      dans la requ&ecirc;te source (par exemple sur <code>CreatedDate</code>). Simple, sans modification structurelle.</li>
+  <li><strong>Passer en upsert</strong> sur <code>IdGlady__c</code> comme colonne cl&eacute;. Le rejeu devient idempotent
+      et les mises &agrave; jour de mapping se propagent aux enregistrements d&eacute;j&agrave; migr&eacute;s.
+      Modification simple &mdash; un param&egrave;tre par composant de sortie &mdash; mais qui change la s&eacute;mantique du run&nbsp;:
+      &agrave; d&eacute;cider explicitement.</li>
+</ul>
+
+<p>Le jour de la bascule, un rattrapage sera n&eacute;cessaire dans tous les cas&nbsp;: des enregistrements
+continueront d'&ecirc;tre cr&eacute;&eacute;s dans l'org source entre le dernier run compl&egrave;te et la mise en service.
+Voir page&nbsp;8.</p>
