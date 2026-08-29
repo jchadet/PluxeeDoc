@@ -1,0 +1,128 @@
+<h1>Migration Glady &rarr; Pluxee &mdash; Documentation de transfert</h1>
+
+<p>Ce document d&eacute;crit la migration de donn&eacute;es Salesforce r&eacute;alis&eacute;e entre l'org source
+et l'org de destination, au moyen de l'ETL Talend Open Studio. Il s'adresse &agrave; l'&eacute;quipe qui
+reprendra les traitements pour les rejouer, d'abord en recette puis en production.</p>
+
+<p>Il d&eacute;crit <strong>ce qui existe</strong> et <strong>pourquoi les choix ont &eacute;t&eacute; faits</strong>.
+Chaque affirmation est soit v&eacute;rifi&eacute;e dans les jobs livr&eacute;s, soit signal&eacute;e comme hypoth&egrave;se &agrave; confirmer.</p>
+
+<h2>1. Le projet en bref</h2>
+
+<table>
+  <tr><th>&Eacute;l&eacute;ment</th><th>Valeur</th></tr>
+  <tr><td>Org source</td><td>Org Salesforce historique, connexion Talend <code>GladyProd</code> &mdash; lecture seule, aucun d&eacute;veloppement r&eacute;alis&eacute; dessus</td></tr>
+  <tr><td>Org de destination</td><td>Org Salesforce cible &mdash; sandbox de recette pour la livraison actuelle, production &agrave; terme</td></tr>
+  <tr><td>Outil</td><td>Talend Open Studio for Data Integration <strong>8.0.1</strong> (build 20211109_1610)</td></tr>
+  <tr><td>API Salesforce</td><td>Version <strong>52.0</strong>, mode <code>Query</code> (API SOAP), insertions par lots de 200</td></tr>
+  <tr><td>Nature du traitement</td><td>Migration ponctuelle, lanc&eacute;e manuellement. Aucun job n'est planifi&eacute; ni r&eacute;sident.</td></tr>
+  <tr><td>Cl&eacute; de rapprochement</td><td><code>IdGlady__c</code> &mdash; Id 18&nbsp;caract&egrave;res de la source, port&eacute; par chaque objet migr&eacute;</td></tr>
+</table>
+
+<h2>2. P&eacute;rim&egrave;tre</h2>
+
+<h3>Ce qui est migr&eacute;</h3>
+
+<table>
+  <tr><th>Job</th><th>Objets</th></tr>
+  <tr>
+    <td><code>MigrationPluxeeLead_v2</code></td>
+    <td>Lead, puis les T&acirc;ches et &Eacute;v&eacute;nements qui leur sont rattach&eacute;s</td>
+  </tr>
+  <tr>
+    <td><code>MigrationPluxeeOppoDevis</code></td>
+    <td>Opportunit&eacute;, Implementation__c, AssociationContactImplementation__c, leurs T&acirc;ches et &Eacute;v&eacute;nements,
+        et les Devis (<code>Quote</code> source &rarr; <code>SBQQ__Quote__c</code> cible)</td>
+  </tr>
+</table>
+
+<h3>Ce qui n'est pas dans ce p&eacute;rim&egrave;tre</h3>
+
+<ul>
+  <li><strong>Comptes, Contacts et plateformes</strong> &mdash; trait&eacute;s par un job amont, port&eacute; par un autre p&eacute;rim&egrave;tre.
+      Il est le pr&eacute;requis absolu&nbsp;: sans compte migr&eacute; dans l'org de destination, aucune opportunit&eacute;,
+      aucun devis, aucun contact ne peut &ecirc;tre cr&eacute;&eacute;, et toute la cha&icirc;ne aval reste vide.</li>
+  <li><strong>Lignes de devis</strong> (<code>QuoteLineItem</code> &rarr; <code>SBQQ__QuoteLine__c</code>) &mdash; non int&eacute;gr&eacute;es, voir la page&nbsp;9.</li>
+  <li><strong>Leads convertis</strong> c&ocirc;t&eacute; source &mdash; exclus volontairement, voir la page&nbsp;6.</li>
+  <li>Certains champs sans &eacute;quivalent cible ou sans donn&eacute;e source &mdash; d&eacute;taill&eacute;s dans les pages de d&eacute;cisions.</li>
+</ul>
+
+<h2>3. Volum&eacute;trie observ&eacute;e en recette</h2>
+
+<p>Ordres de grandeur relev&eacute;s lors des ex&eacute;cutions de recette. Ils servent de rep&egrave;re de contr&ocirc;le,
+pas d'engagement&nbsp;: ils seront diff&eacute;rents en production.</p>
+
+<table>
+  <tr><th>Objet</th><th>Volume source</th><th>Remarque</th></tr>
+  <tr><td>Opportunit&eacute;</td><td>~80&nbsp;000</td><td>dont ~66&nbsp;000 dans le p&eacute;rim&egrave;tre des stades retenus (~83&nbsp;%)</td></tr>
+  <tr><td>Devis</td><td>~11&nbsp;200</td><td></td></tr>
+  <tr><td>Comptes de destination</td><td>~52&nbsp;000</td><td>issus du job amont, servent de table de r&eacute;solution d'Id</td></tr>
+  <tr><td>R&eacute;f&eacute;rentiel des codes NAF</td><td>738</td><td>&agrave; charger dans l'org de destination avant migration</td></tr>
+  <tr><td>Rejets Lead</td><td>~3&nbsp;700</td><td>avant activation du bypass des r&egrave;gles de validation</td></tr>
+</table>
+
+<h2>4. Ce qui est livr&eacute;</h2>
+
+<ul>
+  <li><strong>Deux jobs Talend</strong> &mdash; <code>MigrationPluxeeLead_v2</code> (34&nbsp;composants, 3&nbsp;sous-jobs) et
+      <code>MigrationPluxeeOppoDevis</code> (59&nbsp;composants, 8&nbsp;sous-jobs).</li>
+  <li><strong>La routine <code>PicklistMapper</code></strong> &mdash; classe Java partag&eacute;e du r&eacute;f&eacute;rentiel Talend,
+      qui traduit les valeurs de listes de s&eacute;lection d'une org &agrave; l'autre.</li>
+  <li><strong>Le fichier CSV de correspondance des valeurs</strong>, lu par la routine au d&eacute;marrage de chaque job.</li>
+  <li><strong>La documentation g&eacute;n&eacute;r&eacute;e par Talend</strong> pour les deux jobs &mdash; r&eacute;f&eacute;rence exhaustive,
+      champ par champ, r&eacute;g&eacute;n&eacute;rable &agrave; tout moment depuis le Studio.</li>
+  <li><strong>Le Permission Set de migration</strong>, d&eacute;ploy&eacute; dans l'org de destination.</li>
+  <li>Le pr&eacute;sent ensemble de pages.</li>
+</ul>
+
+<h2>5. Ce qu'il faut savoir faire pour reprendre</h2>
+
+<p>Trois comp&eacute;tences suffisent. Il n'est pas n&eacute;cessaire d'&ecirc;tre expert Talend&nbsp;:</p>
+
+<ol>
+  <li><strong>Installer et ouvrir Talend Open Studio</strong>, importer le projet et la routine.</li>
+  <li><strong>Changer les points de connexion</strong> pour pointer vers une autre org de destination
+      (page&nbsp;2, section &laquo;&nbsp;Bascule d'environnement&nbsp;&raquo;).</li>
+  <li><strong>Lire les fichiers d'erreur</strong> pour comprendre pourquoi un enregistrement n'est pas pass&eacute;,
+      et savoir ce qui rel&egrave;ve de la technique ou du m&eacute;tier (page&nbsp;8).</li>
+</ol>
+
+<p>Le reste &mdash; mapping, cascades de listes de s&eacute;lection, ordre des sous-jobs &mdash; est d&eacute;j&agrave; en place
+et document&eacute; dans les pages qui suivent.</p>
+
+<h2>6. Sommaire</h2>
+
+<table>
+  <tr><th>Page</th><th>Contenu</th><th>&Agrave; lire quand</th></tr>
+  <tr><td><strong>1. Architecture &amp; p&eacute;rim&egrave;tre</strong></td>
+      <td>Orgs, connexions, objets, ordre de migration et d&eacute;pendances</td>
+      <td>Pour comprendre la cha&icirc;ne d'ensemble</td></tr>
+  <tr><td><strong>2. Process Talend</strong></td>
+      <td>Anatomie d'un sous-job, lookups, gestion d'erreurs, fichiers produits, variables de contexte</td>
+      <td>Avant de toucher &agrave; un job</td></tr>
+  <tr><td><strong>3. Requ&ecirc;tes et p&eacute;rim&egrave;tre migr&eacute;</strong></td>
+      <td>Les requ&ecirc;tes SOQL qui d&eacute;finissent ce qui est migr&eacute;, et o&ugrave; les modifier</td>
+      <td>Pour r&eacute;pondre &agrave; &laquo;&nbsp;pourquoi cet enregistrement n'est-il pas pass&eacute;&nbsp;?&nbsp;&raquo;</td></tr>
+  <tr><td><strong>4. PicklistMapper</strong></td>
+      <td>R&ocirc;le de la routine, format du CSV, modes d'usage, fichier d'audit</td>
+      <td>Pour corriger une correspondance de valeurs</td></tr>
+  <tr><td><strong>5. D&eacute;cisions &mdash; transverses</strong></td>
+      <td>Bypass, record types, cl&eacute; externe, filtres, activit&eacute;s, rejeu</td>
+      <td>Pour comprendre les choix structurants</td></tr>
+  <tr><td><strong>6. D&eacute;cisions &mdash; Lead &amp; Activit&eacute;s</strong></td>
+      <td>Arbitrages champ par champ sur le Lead</td>
+      <td>En cas de question sur un champ de Lead</td></tr>
+  <tr><td><strong>7. D&eacute;cisions &mdash; Opportunit&eacute;, Impl&eacute;mentation, Devis</strong></td>
+      <td>Arbitrages champ par champ sur la cha&icirc;ne commerciale</td>
+      <td>En cas de question sur un champ d'Opportunit&eacute; ou de Devis</td></tr>
+  <tr><td><strong>8. Guide de reprise</strong></td>
+      <td>Pr&eacute;requis, check-list, ordre de lancement, contr&ocirc;les, traitement des rejets</td>
+      <td><strong>Avant chaque ex&eacute;cution</strong></td></tr>
+  <tr><td><strong>9. Points ouverts &amp; reste &agrave; faire</strong></td>
+      <td>Ce qui reste &agrave; trancher, &agrave; revoir et &agrave; construire</td>
+      <td>Pour cadrer la suite</td></tr>
+</table>
+
+<hr/>
+<p><em>Document de transfert. Les volum&eacute;tries et les arbitrages d&eacute;crits refl&egrave;tent l'&eacute;tat de la livraison de recette
+et sont &agrave; revalider avant la migration de production.</em></p>

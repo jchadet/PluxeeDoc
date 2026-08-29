@@ -1,0 +1,139 @@
+<h1>9. Points ouverts &amp; reste &agrave; faire</h1>
+
+<p>Ce qui n'est pas tranch&eacute;, pas construit, ou &agrave; revoir avant la migration de production.
+Cette page est faite pour &ecirc;tre mise &agrave; jour au fil des d&eacute;cisions&nbsp;: chaque ligne trait&eacute;e devrait
+migrer vers la page de d&eacute;cisions correspondante.</p>
+
+<h2>9.1 &Agrave; trancher avec le m&eacute;tier</h2>
+
+<table>
+  <tr><th>#</th><th>Sujet</th><th>Question pos&eacute;e</th><th>Cons&eacute;quence si non trait&eacute;</th><th>R&eacute;f.</th></tr>
+  <tr><td>M1</td><td><strong>Sujet des &Eacute;v&eacute;nements</strong></td>
+      <td>La r&eacute;duction &agrave; deux valeurs correspond-elle au besoin, ou faut-il conserver le libell&eacute; d'origine&nbsp;?</td>
+      <td>Perte du libell&eacute; d'origine sur tous les &eacute;v&eacute;nements migr&eacute;s</td><td>page&nbsp;5, T6</td></tr>
+  <tr><td>M2</td><td><strong>Concurrents &rarr; &Eacute;metteur retenu</strong></td>
+      <td>Conserver la premi&egrave;re valeur (arbitraire), appliquer une r&egrave;gle de priorit&eacute;, ou laisser vide&nbsp;?</td>
+      <td>85&nbsp;% des cas document&eacute;s perdent de l'information, avec une valeur potentiellement non repr&eacute;sentative</td>
+      <td>page&nbsp;7, O5</td></tr>
+  <tr><td>M3</td><td><strong>Stades d'opportunit&eacute;</strong></td>
+      <td>Confirmer deux correspondances&nbsp;: le stade de closing et le renouvellement en cours.</td>
+      <td>Reporting d'entonnoir fauss&eacute; sur ces volumes</td><td>page&nbsp;7, O1</td></tr>
+  <tr><td>M4</td><td><strong>Opportunit&eacute;s cl&ocirc;tur&eacute;es</strong></td>
+      <td>Confirmer leur r&eacute;int&eacute;gration dans le p&eacute;rim&egrave;tre (~83&nbsp;% du volume).</td>
+      <td>Si l'exclusion est confirm&eacute;e, retirer deux valeurs de la clause de stades</td><td>page&nbsp;7, O1</td></tr>
+  <tr><td>M5</td><td><strong>Origine de l'opportunit&eacute;</strong></td>
+      <td>Valider les 7 correspondances d&eacute;duites et le rapprochement de la valeur d&eacute;signant l'&eacute;quipe commerciale.</td>
+      <td>Origines partiellement erron&eacute;es&nbsp;; &agrave; r&eacute;percuter aussi sur le Lead</td><td>page&nbsp;7, O4</td></tr>
+  <tr><td>M6</td><td><strong>Type de soci&eacute;t&eacute;</strong></td>
+      <td>Existe-t-il une r&egrave;gle permettant de distinguer les structures relevant d'un comit&eacute; social&nbsp;?</td>
+      <td>Valeur constante non v&eacute;rifi&eacute;e sur les leads marqu&eacute;s convertis</td><td>page&nbsp;6, L6</td></tr>
+  <tr><td>M7</td><td><strong>Raison du statut</strong></td>
+      <td>Une r&egrave;gle plus fine que le d&eacute;faut actuel est-elle disponible&nbsp;?</td>
+      <td>Raison de non-conversion approximative</td><td>page&nbsp;6, L7</td></tr>
+  <tr><td>M8</td><td><strong>Tranches d'effectif</strong></td>
+      <td>D&eacute;finir les tranches cibles si un d&eacute;coupage exact est attendu.</td>
+      <td>Trois correspondances &laquo;&nbsp;&agrave; cheval&nbsp;&raquo; restent impr&eacute;cises</td><td>page&nbsp;6, L8</td></tr>
+  <tr><td>M9</td><td><strong>Int&eacute;r&ecirc;t produits</strong></td>
+      <td>Fournir une table de correspondance entre les deux univers produits.</td>
+      <td>Champ non migr&eacute; &mdash; 0 correspondance sur 28 valeurs source</td><td>page&nbsp;6, L9</td></tr>
+  <tr><td>M10</td><td><strong>Propri&eacute;taires</strong></td>
+      <td>Faut-il reconstituer le portefeuille commercial&nbsp;? Si oui, fournir la correspondance entre utilisateurs des deux orgs.</td>
+      <td>Tous les enregistrements appartiennent &agrave; l'utilisateur d'int&eacute;gration</td><td>page&nbsp;5, T5</td></tr>
+</table>
+
+<h2>9.2 &Agrave; revoir apr&egrave;s la restructuration produit</h2>
+
+<p>Plusieurs arbitrages s'appuient sur l'organisation produit actuelle de l'org de destination.
+Une restructuration de l'offre les invalidera&nbsp;: ils sont &agrave; reprendre en bloc, pas un par un.</p>
+
+<table>
+  <tr><th>Sujet</th><th>Ce qui devra &ecirc;tre repris</th><th>R&eacute;f.</th></tr>
+  <tr><td><strong>Cascade March&eacute; &rarr; Produit &rarr; Famille</strong></td>
+      <td>Les trois lignes de chaque valeur source dans le fichier de correspondance, plus le repli sur la raison du besoin</td>
+      <td>page&nbsp;7, O2</td></tr>
+  <tr><td><strong>Champs sans source</strong></td>
+      <td>Plusieurs champs exig&eacute;s par des r&egrave;gles de validation de l'org de destination n'ont aucun &eacute;quivalent source
+          &mdash; ils sont li&eacute;s &agrave; la restructuration. Ils pourront &ecirc;tre aliment&eacute;s une fois le mod&egrave;le cible stabilis&eacute;.</td>
+      <td>page&nbsp;5, T1</td></tr>
+  <tr><td><strong>Type de lead</strong></td>
+      <td>Champ mis de c&ocirc;t&eacute; faute d'&eacute;quivalent cible</td><td>page&nbsp;6, L9</td></tr>
+  <tr><td><strong>Types et familles de produit sur l'Opportunit&eacute;</strong></td>
+      <td>Noms d'API &agrave; reconfirmer sur le mod&egrave;le cible d&eacute;finitif</td><td>page&nbsp;7</td></tr>
+</table>
+
+<h2>9.3 Non impl&eacute;ment&eacute;</h2>
+
+<table>
+  <tr><th>#</th><th>Objet</th><th>&Eacute;tat</th><th>Ce qu'il faudrait</th></tr>
+  <tr><td>R1</td><td><strong>Lignes de devis</strong></td>
+      <td><strong>Non migr&eacute;es.</strong> Les devis arrivent sans leur d&eacute;tail&nbsp;: ni montants ligne &agrave; ligne,
+          ni produits, ni quantit&eacute;s, ni remises.</td>
+      <td>Un sous-job suppl&eacute;mentaire, sur le m&ecirc;me mod&egrave;le que les autres&nbsp;: extraction source,
+          r&eacute;solution du devis parent par <code>IdGlady__c</code>, insertion. D&eacute;pendance stricte&nbsp;:
+          apr&egrave;s les devis. C'est le principal reste &agrave; faire.</td></tr>
+  <tr><td>R2</td><td><strong>Traduction des listes &agrave; s&eacute;lection multiple</strong></td>
+      <td>La routine ne traite qu'une valeur unique. Contournement actuel&nbsp;: ne conserver que la premi&egrave;re valeur.</td>
+      <td>Une m&eacute;thode de la routine qui d&eacute;coupe la cha&icirc;ne, traduit chaque valeur puis recompose.
+          L&egrave;verait la difficult&eacute; sur les &eacute;v&eacute;nements de conformit&eacute; sociale&nbsp;; l'int&eacute;r&ecirc;t produits demande
+          en plus une table de correspondance (M9) et la gestion d'une d&eacute;pendance de contexte.</td></tr>
+  <tr><td>R3</td><td><strong>Rejeu idempotent</strong></td>
+      <td>Sorties en insertion&nbsp;: un rejeu produit des rejets pour doublon sur tout ce qui est d&eacute;j&agrave; migr&eacute;.</td>
+      <td>Passage en mise &agrave; jour sur <code>IdGlady__c</code> &mdash; un param&egrave;tre par composant de sortie.
+          Change la s&eacute;mantique du run&nbsp;: &agrave; d&eacute;cider explicitement.</td></tr>
+  <tr><td>R4</td><td><strong>Reprise des propri&eacute;taires</strong></td>
+      <td>Non trait&eacute;e</td>
+      <td>Une table de correspondance entre utilisateurs, puis un lookup sur le m&ecirc;me principe que les autres rattachements (M10).</td></tr>
+</table>
+
+<h2>9.4 &Agrave; compl&eacute;ter</h2>
+
+<table>
+  <tr><th>#</th><th>&Eacute;l&eacute;ment</th><th>Pourquoi c'est n&eacute;cessaire</th></tr>
+  <tr><td>C1</td><td><strong>Liste des r&egrave;gles de validation contourn&eacute;es</strong> et des champs laiss&eacute;s vides de ce fait</td>
+      <td>Sans elle, impossible de savoir ce que le bypass masque r&eacute;ellement, ni d'&eacute;valuer le travail
+          n&eacute;cessaire pour s'en passer en production. C'est le compl&eacute;ment le plus utile &agrave; produire.</td></tr>
+  <tr><td>C2</td><td><strong>Proc&eacute;dure d'installation de Talend</strong></td>
+      <td>L'ex&eacute;cutable a &eacute;t&eacute; obtenu par voie interne et n'est pas librement t&eacute;l&eacute;chargeable&nbsp;: la marche
+          &agrave; suivre pour en disposer n'est &eacute;crite nulle part.</td></tr>
+  <tr><td>C3</td><td><strong>D&eacute;nombrements sur les donn&eacute;es de production</strong></td>
+      <td>Toutes les correspondances ont &eacute;t&eacute; construites sur les donn&eacute;es de recette. La r&eacute;partition des
+          valeurs en production peut diff&eacute;rer, et faire appara&icirc;tre des valeurs sans correspondance.</td></tr>
+  <tr><td>C4</td><td><strong>Volum&eacute;tries cibles de production</strong></td>
+      <td>Les rep&egrave;res de contr&ocirc;le de la page&nbsp;8 s'appuient sur les volumes de recette.</td></tr>
+</table>
+
+<h2>9.5 Backlog de production</h2>
+
+<p>Ce qui devra &ecirc;tre fait, dans l'ordre, en amont de la migration de production.</p>
+
+<table>
+  <tr><th>#</th><th>&Eacute;tape</th><th>D&eacute;pend de</th></tr>
+  <tr><td>1</td><td><strong>Nettoyage des donn&eacute;es source</strong> &mdash; codes d'activit&eacute; manquants, formats de t&eacute;l&eacute;phone,
+          SIRET, doublons, d&eacute;passements de longueur. Alimenter le m&eacute;tier &agrave; partir des fichiers de rejet de recette.</td>
+      <td>&mdash;</td></tr>
+  <tr><td>2</td><td><strong>Rafra&icirc;chir l'environnement de test</strong> avec les donn&eacute;es nettoy&eacute;es et rejouer.</td><td>1</td></tr>
+  <tr><td>3</td><td><strong>Trancher les points m&eacute;tier</strong> M1 &agrave; M10 et r&eacute;percuter dans le fichier de correspondance.</td><td>&mdash;</td></tr>
+  <tr><td>4</td><td><strong>Reprendre les arbitrages li&eacute;s &agrave; la restructuration produit</strong> une fois le mod&egrave;le cible stabilis&eacute;.</td><td>Restructuration</td></tr>
+  <tr><td>5</td><td><strong>Traiter les lignes de devis</strong> (R1) ou acter leur absence.</td><td>&mdash;</td></tr>
+  <tr><td>6</td><td><strong>Refaire les d&eacute;nombrements</strong> sur les donn&eacute;es de production et compl&eacute;ter les correspondances (C3).</td><td>&mdash;</td></tr>
+  <tr><td>7</td><td><strong>Rejouer sans bypass</strong> pour mesurer la qualit&eacute; r&eacute;elle des donn&eacute;es, et arbitrer
+          ce qui est corrig&eacute; &agrave; la source contre ce qui reste contourn&eacute;.</td><td>1, 2</td></tr>
+  <tr><td>8</td><td><strong>D&eacute;cider du mode de rejeu</strong> pour le rattrapage du jour de bascule (R3).</td><td>&mdash;</td></tr>
+  <tr><td>9</td><td><strong>Pr&eacute;parer l'org de production</strong> &mdash; d&eacute;rouler les pr&eacute;requis de la page&nbsp;8.</td><td>&mdash;</td></tr>
+  <tr><td>10</td><td><strong>Migration, puis rattrapage</strong> le jour de la bascule&nbsp;; retirer ensuite le Permission Set de migration.</td><td>tout ce qui pr&eacute;c&egrave;de</td></tr>
+</table>
+
+<h2>9.6 Une remarque sur la maintenance de cette documentation</h2>
+
+<p>Deux sources restent la r&eacute;f&eacute;rence et doivent primer sur ces pages en cas de divergence&nbsp;:</p>
+
+<ul>
+  <li><strong>La documentation g&eacute;n&eacute;r&eacute;e par Talend</strong> pour le d&eacute;tail exhaustif champ par champ.
+      Elle est r&eacute;g&eacute;n&eacute;rable depuis le Studio&nbsp;: la r&eacute;g&eacute;n&eacute;rer apr&egrave;s chaque modification des jobs
+      plut&ocirc;t que de recopier les mappings ici.</li>
+  <li><strong>Le fichier CSV de correspondance des listes de s&eacute;lection</strong> pour les valeurs&nbsp;:
+      il est modifiable sans ouvrir Talend, donc susceptible d'&eacute;voluer plus vite que ces pages.</li>
+</ul>
+
+<p>Les pages&nbsp;5 &agrave; 7 documentent le <em>pourquoi</em> des choix, ce qu'aucun outil ne g&eacute;n&egrave;re&nbsp;:
+c'est l&agrave; qu'il faut &eacute;crire quand une d&eacute;cision est prise ou revue.</p>

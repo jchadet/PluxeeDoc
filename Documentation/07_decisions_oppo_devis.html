@@ -1,0 +1,255 @@
+<h1>7. D&eacute;cisions &amp; arbitrages &mdash; Opportunit&eacute;, Impl&eacute;mentation, Devis</h1>
+
+<p>Arbitrages sp&eacute;cifiques au job <code>MigrationPluxeeOppoDevis</code>. La grille de lecture et les statuts
+sont d&eacute;finis en page&nbsp;5.</p>
+
+<table>
+  <tr><th>#</th><th>Sujet</th><th>Statut</th></tr>
+  <tr><td>O1</td><td>Stades d'opportunit&eacute; &mdash; 47 vers 6</td><td>Valid&eacute; / partiellement d&eacute;duit</td></tr>
+  <tr><td>O2</td><td>Cascade March&eacute; &rarr; Produit &rarr; Famille de produit</td><td>D&eacute;duit</td></tr>
+  <tr><td>O3</td><td>March&eacute; secondaire et raison de la perte &mdash; non mapp&eacute;s</td><td>Valid&eacute;</td></tr>
+  <tr><td>O4</td><td>Source &rarr; Origine</td><td>D&eacute;duit</td></tr>
+  <tr><td>O5</td><td>Concurrents &rarr; &Eacute;metteur retenu &mdash; premi&egrave;re valeur</td><td>&Agrave; confirmer</td></tr>
+  <tr><td>O6</td><td>Listes &agrave; s&eacute;lection multiple non trait&eacute;es</td><td>Valid&eacute;</td></tr>
+  <tr><td>O7</td><td>Impl&eacute;mentations et associations contact</td><td>Valid&eacute;</td></tr>
+  <tr><td>O8</td><td>Devis &mdash; changement de type d'objet</td><td>Valid&eacute;</td></tr>
+</table>
+
+<h2>O1. Stades d'opportunit&eacute; &mdash; 47 vers 6</h2>
+
+<p><strong>Contexte.</strong> L'org source porte 47&nbsp;stades d'opportunit&eacute;, l'org de destination 6.
+Le fichier de correspondance fourni par le m&eacute;tier marquait une partie des stades comme
+&laquo;&nbsp;&agrave; supprimer&nbsp;&raquo;, tout en fournissant malgr&eacute; tout une correspondance pour certains d'entre eux.</p>
+
+<p><strong>D&eacute;cision.</strong> Deux niveaux de filtrage&nbsp;:</p>
+
+<ol>
+  <li><strong>Filtrage &agrave; l'extraction</strong> &mdash; 12&nbsp;stades retenus dans la clause <code>StageName IN (&hellip;)</code>
+      de la requ&ecirc;te source (page&nbsp;3). Les autres ne sont pas extraits.</li>
+  <li><strong>Correspondance</strong> &mdash; les stades retenus sont traduits vers les 6&nbsp;stades de destination
+      via le PicklistMapper.</li>
+</ol>
+
+<table>
+  <tr><th>Stade source</th><th>Stade de destination</th><th>Statut</th></tr>
+  <tr><td>Nouvelle opportunit&eacute;</td><td>1- Nouvelle opportunit&eacute;</td><td>Valid&eacute;</td></tr>
+  <tr><td>R1 pris</td><td>1- Nouvelle opportunit&eacute;</td><td>Valid&eacute;</td></tr>
+  <tr><td>R1 annul&eacute;</td><td>1- Nouvelle opportunit&eacute;</td><td>Valid&eacute;</td></tr>
+  <tr><td>RDV fait</td><td>2- Qualification</td><td>Valid&eacute;</td></tr>
+  <tr><td>Suivi R1</td><td>2- Qualification</td><td>Valid&eacute;</td></tr>
+  <tr><td>Qualification</td><td>2- Qualification</td><td>Valid&eacute;</td></tr>
+  <tr><td>R2 et plus</td><td>3- N&eacute;gociation</td><td>Valid&eacute;</td></tr>
+  <tr><td>N&eacute;gociation</td><td>3- N&eacute;gociation</td><td>Valid&eacute;</td></tr>
+  <tr><td>Closing</td><td>4- Accord de principe</td><td><strong>&Agrave; confirmer</strong></td></tr>
+  <tr><td>Renouvellement en cours</td><td>5- Ferm&eacute;e Gagn&eacute;e</td><td><strong>&Agrave; confirmer</strong></td></tr>
+  <tr><td>Cl&ocirc;tur&eacute;e - Gagn&eacute;e</td><td>5- Ferm&eacute;e Gagn&eacute;e</td><td>Valid&eacute;</td></tr>
+  <tr><td>Cl&ocirc;tur&eacute;e - Perdue</td><td>6- Ferm&eacute;e Perdue</td><td>Valid&eacute;</td></tr>
+</table>
+
+<p><strong>Deux arbitrages de migration &agrave; conna&icirc;tre.</strong></p>
+
+<ul>
+  <li><strong>Les opportunit&eacute;s cl&ocirc;tur&eacute;es ont &eacute;t&eacute; r&eacute;int&eacute;gr&eacute;es.</strong> Le fichier m&eacute;tier les marquait
+      &laquo;&nbsp;&agrave; supprimer&nbsp;&raquo; mais fournissait leur correspondance. Elles repr&eacute;sentent
+      <strong>environ 83&nbsp;% du volume</strong> (~66&nbsp;000 opportunit&eacute;s)&nbsp;: les exclure aurait vid&eacute; l'historique
+      commercial de sa substance. Elles sont donc migr&eacute;es. Si le m&eacute;tier confirme l'exclusion, il suffit
+      de retirer ces deux valeurs de la clause <code>StageName IN</code>.</li>
+  <li><strong>Environ 14&nbsp;000 opportunit&eacute;s restent exclues</strong> &mdash; stades d'amor&ccedil;age, de qualification
+      pr&eacute;coce, de pr&eacute;sentation et de tarification. Exclusion voulue par le m&eacute;tier.</li>
+</ul>
+
+<p><strong>Limite.</strong> Le fichier m&eacute;tier employait une nomenclature de stades qui ne correspondait pas
+aux noms d'API de l'org de destination&nbsp;; la correspondance a &eacute;t&eacute; &eacute;tablie par position dans le cycle de vente.
+Deux correspondances restent des paris&nbsp;: <em>Closing</em> pourrait rel&eacute;ver de la n&eacute;gociation plut&ocirc;t que de
+l'accord de principe, et <em>Renouvellement en cours</em> d&eacute;crit une opportunit&eacute; qui n'est pas n&eacute;cessairement
+gagn&eacute;e.</p>
+
+<p><strong>En production.</strong> Faire valider ces deux correspondances. Le stade pilote les r&egrave;gles de
+qualification commerciale et l'ensemble du reporting d'entonnoir&nbsp;: une erreur ici se voit imm&eacute;diatement
+dans les tableaux de bord.</p>
+
+<h2>O2. Cascade March&eacute; &rarr; Produit &rarr; Famille de produit</h2>
+
+<p><strong>Contexte.</strong> Dans l'org de destination, trois listes de s&eacute;lection sont d&eacute;pendantes&nbsp;:
+la famille de produit contr&ocirc;le le produit, qui contr&ocirc;le le march&eacute;. Une valeur de march&eacute; n'est ins&eacute;rable
+que si les deux champs parents portent les bonnes valeurs. Or <strong>ces champs parents n'existent pas
+c&ocirc;t&eacute; source</strong>&nbsp;: seul le march&eacute; y est renseign&eacute;.</p>
+
+<p><strong>D&eacute;cision (d&eacute;duite).</strong> Une seule valeur source alimente les trois champs cibles, via
+<code>translateTo</code> (mode&nbsp;3 du PicklistMapper, page&nbsp;4). Le fichier de correspondance porte
+trois lignes par valeur source.</p>
+
+<p><strong>Un repli sp&eacute;cifique &agrave; l'Opportunit&eacute;.</strong> Quand la valeur de march&eacute; ne permet pas de d&eacute;duire
+la famille de produit, le mapping bascule sur un second champ source &mdash; la raison du besoin&nbsp;:</p>
+
+<pre><code>Famille_de_produit__c &larr;
+    translateTo("Opportunity","Marche__c", &hellip;, "Famille_de_produit__c")
+    si non null, sinon
+    translateTo("Opportunity","Raison_du_besoin__c", &hellip;, "Famille_de_produit__c")</code></pre>
+
+<p>Ce repli augmente le taux de remplissage sans jamais &eacute;craser une valeur d&eacute;j&agrave; d&eacute;duite du march&eacute;.</p>
+
+<p><strong>Limite.</strong> Deux fragilit&eacute;s. D'une part, les lignes d'une cascade sont ind&eacute;pendantes dans le
+fichier CSV&nbsp;: en modifier une sans les autres produit un rejet Salesforce peu explicite
+(<code>INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST</code>). D'autre part, ces correspondances refl&egrave;tent
+l'organisation produit actuelle&nbsp;: <strong>une restructuration de l'offre les invalidera</strong>.</p>
+
+<p><strong>En production.</strong> Revoir int&eacute;gralement ces correspondances apr&egrave;s la restructuration produit.
+R&egrave;gle op&eacute;rationnelle&nbsp;: toute modification d'une cascade se fait sur les trois lignes &agrave; la fois.</p>
+
+<h2>O3. March&eacute; secondaire et raison de la perte &mdash; non mapp&eacute;s</h2>
+
+<p><strong>Contexte.</strong> Le fichier de correspondance m&eacute;tier d&eacute;signait un champ de march&eacute; secondaire
+comme source du march&eacute; de destination.</p>
+
+<p><strong>D&eacute;cision (valid&eacute;e par les donn&eacute;es).</strong> Le d&eacute;nombrement montre que ce champ est
+<strong>vide dans les donn&eacute;es</strong>&nbsp;: c'est le champ de march&eacute; principal qui porte l'information.
+Le champ secondaire n'est pas mapp&eacute;. M&ecirc;me constat pour le champ de raison de la perte&nbsp;:
+vide sur la totalit&eacute; des ~80&nbsp;000 opportunit&eacute;s.</p>
+
+<p><strong>Le&ccedil;on g&eacute;n&eacute;rale.</strong> C'est le cas d'&eacute;cole qui a conduit &agrave; la r&egrave;gle du PicklistMapper&nbsp;:
+<strong>construire les correspondances depuis un d&eacute;nombrement des donn&eacute;es r&eacute;elles, jamais depuis un
+fichier de sp&eacute;cification</strong>. Le fichier m&eacute;tier d&eacute;crivait le mod&egrave;le tel qu'il aurait d&ucirc; &ecirc;tre utilis&eacute;,
+pas tel qu'il l'a &eacute;t&eacute;.</p>
+
+<p><strong>En production.</strong> Refaire les d&eacute;nombrements sur les donn&eacute;es de production avant le run&nbsp;:
+la r&eacute;partition des valeurs peut avoir chang&eacute;.</p>
+
+<h2>O4. Source &rarr; Origine</h2>
+
+<p><strong>Contexte.</strong> Deux champs source candidats pour alimenter l'origine de l'opportunit&eacute;.
+Le d&eacute;nombrement les d&eacute;partage nettement&nbsp;: l'un est vide &agrave; 98,5&nbsp;% et ne porte que cinq valeurs
+r&eacute;siduelles sans correspondance &eacute;vidente&nbsp;; l'autre est correctement renseign&eacute;.</p>
+
+<p><strong>D&eacute;cision (d&eacute;duite).</strong> Le champ le mieux renseign&eacute; est mapp&eacute; vers l'origine
+(une trentaine de lignes de correspondance)&nbsp;; le champ r&eacute;siduel n'est pas mapp&eacute; &mdash; le risque
+d'introduire des valeurs fausses d&eacute;passait le gain.</p>
+
+<p>La correspondance r&eacute;utilise celle &eacute;tablie pour l'origine du Lead (page&nbsp;6, L4)&nbsp;: les valeurs sont
+quasi identiques entre les deux objets. Sur cette base&nbsp;:</p>
+
+<ul>
+  <li><strong>21&nbsp;valeurs</strong> reprises directement de la correspondance du Lead&nbsp;;</li>
+  <li><strong>7&nbsp;valeurs d&eacute;duites</strong>, sans correspondance c&ocirc;t&eacute; Lead mais dont le rapprochement est
+      raisonnable &mdash; les diff&eacute;rentes variantes de bases de donn&eacute;es marketing vers l'import marketing,
+      la prospection sortante vers la t&eacute;l&eacute;prospection, l'acquisition et le r&eacute;f&eacute;rencement vers le digital&nbsp;;</li>
+  <li><strong>1&nbsp;pari</strong> &mdash; une valeur d&eacute;signant l'&eacute;quipe commerciale, rapproch&eacute;e de l'action commerciale&nbsp;;</li>
+  <li><strong>un d&eacute;faut &agrave; vide</strong>, qui couvre les ~8&nbsp;400 opportunit&eacute;s sans origine et les valeurs futures.</li>
+</ul>
+
+<p><strong>Limite.</strong> Les 7&nbsp;valeurs d&eacute;duites et le pari n'ont pas &eacute;t&eacute; valid&eacute;s formellement par le m&eacute;tier.</p>
+
+<p><strong>En production.</strong> Si le m&eacute;tier valide ou corrige la correspondance des origines du Lead,
+<strong>r&eacute;percuter sur l'Opportunit&eacute;</strong>&nbsp;: les deux partagent la m&ecirc;me logique et doivent rester coh&eacute;rentes.</p>
+
+<h2>O5. Concurrents &rarr; &Eacute;metteur retenu &mdash; premi&egrave;re valeur</h2>
+
+<p><strong>Contexte.</strong> Le champ source est une liste &agrave; s&eacute;lection <strong>multiple</strong> (18&nbsp;valeurs)&nbsp;;
+le champ de destination est une liste &agrave; s&eacute;lection <strong>simple</strong>. La routine ne traite pas les
+listes multiples.</p>
+
+<p><strong>D&eacute;cision (&agrave; confirmer).</strong> Seule la premi&egrave;re valeur est conserv&eacute;e&nbsp;: d&eacute;coupage sur le
+s&eacute;parateur dans le <code>tMap</code>, en amont de l'appel &agrave; la routine. Aucune modification de la routine.</p>
+
+<pre><code>PicklistMapper.translateTo("Opportunity","Concurrents__c",
+   valeur == null ? null :
+   (valeur.contains(";") ? valeur.split(";")[0] : valeur),
+   "EmetteurRetenu__c")</code></pre>
+
+<div style="border-left:4px solid #a33; padding:8px 12px; margin:16px 0; background:#fdf3f3;">
+<strong>La perte n'est pas marginale.</strong> Sur 126&nbsp;combinaisons distinctes rencontr&eacute;es dans les donn&eacute;es,
+<strong>108 comportent plusieurs valeurs &mdash; soit 85&nbsp;%</strong>. Une majorit&eacute; des opportunit&eacute;s
+document&eacute;es sur ce point perdent donc de l'information.<br/><br/>
+De plus, la &laquo;&nbsp;premi&egrave;re&nbsp;&raquo; valeur est celle de l'ordre de stockage Salesforce &mdash; c'est-&agrave;-dire
+l'ordre de d&eacute;finition de la liste de s&eacute;lection. <strong>Ce n'est ni l'ordre de s&eacute;lection par l'utilisateur,
+ni une priorit&eacute; m&eacute;tier.</strong> Rien ne garantit que la valeur conserv&eacute;e soit la plus significative.
+</div>
+
+<p><strong>Corrections apport&eacute;es aux propositions m&eacute;tier.</strong> Trois valeurs cibles propos&eacute;es n'existaient
+pas dans l'org de destination et auraient provoqu&eacute; des rejets&nbsp;; elles ont &eacute;t&eacute; remplac&eacute;es par les valeurs
+exactes du jeu de valeurs, sans en cr&eacute;er de nouvelles&nbsp;: deux libell&eacute;s sans &eacute;quivalent ont &eacute;t&eacute; bascul&eacute;s
+vers la valeur g&eacute;n&eacute;rique &laquo;&nbsp;Autres&nbsp;&raquo;, et un troisi&egrave;me a &eacute;t&eacute; align&eacute; sur la valeur
+&laquo;&nbsp;Non accessible (NSP)&nbsp;&raquo;.</p>
+
+<p><strong>En production.</strong> Signaler la perte au m&eacute;tier et trancher&nbsp;: si le champ doit refl&eacute;ter un
+concurrent pr&eacute;cis plut&ocirc;t que le premier de la liste, la logique est &agrave; revoir &mdash; soit par une r&egrave;gle de
+priorit&eacute; explicite, soit en laissant le champ vide plut&ocirc;t que d'y placer une valeur arbitraire.</p>
+
+<h2>O6. Listes &agrave; s&eacute;lection multiple non trait&eacute;es</h2>
+
+<p><strong>Contexte.</strong> La routine traduit une valeur unique. Une liste &agrave; s&eacute;lection multiple contient
+plusieurs valeurs s&eacute;par&eacute;es, dont chacune devrait &ecirc;tre traduite puis recompos&eacute;e.</p>
+
+<p><strong>D&eacute;cision (valid&eacute;e).</strong> Deux champs sont laiss&eacute;s de c&ocirc;t&eacute;&nbsp;:</p>
+
+<table>
+  <tr><th>Champ</th><th>Difficult&eacute;</th></tr>
+  <tr><td>Int&eacute;r&ecirc;t produits</td>
+      <td>Liste multiple vers liste multiple, <strong>et</strong> la cible d&eacute;pend d'un champ de contexte&nbsp;:
+          double difficult&eacute;. La cible partage par ailleurs son jeu de valeurs avec le champ &eacute;quivalent du Lead
+          (page&nbsp;6, L9), qui pr&eacute;sente 0&nbsp;correspondance.</td></tr>
+  <tr><td>&Eacute;v&eacute;nements de conformit&eacute; sociale</td>
+      <td>Liste multiple vers liste multiple. Traitable si le volume le justifie.</td></tr>
+</table>
+
+<p><strong>Limite.</strong> Ces champs ne sont pas migr&eacute;s. L'information existe dans l'org source mais n'est
+pas reprise.</p>
+
+<p><strong>En production.</strong> Une &eacute;volution de la routine &mdash; une m&eacute;thode qui d&eacute;coupe, traduit chaque
+valeur puis recompose &mdash; l&egrave;verait la difficult&eacute; pour le second cas. Le premier demande en plus une table
+de correspondance fournie par le m&eacute;tier, qui n'existe pas &agrave; ce jour. Voir page&nbsp;9.</p>
+
+<h2>O7. Impl&eacute;mentations et associations contact</h2>
+
+<p><strong>Contexte.</strong> L'impl&eacute;mentation est un objet riche (~180&nbsp;champs de suivi de mise en service)
+rattach&eacute; &agrave; l'opportunit&eacute;. Les associations contact&ndash;impl&eacute;mentation forment une table de jointure
+qui d&eacute;signe, pour chaque impl&eacute;mentation, les contacts administrateurs et leurs acc&egrave;s applicatifs.</p>
+
+<p><strong>D&eacute;cisions (valid&eacute;es).</strong></p>
+
+<ul>
+  <li><strong>Reprise &agrave; l'identique</strong> pour l'essentiel des champs d'impl&eacute;mentation&nbsp;: correspondance
+      directe, sans traduction. Les mod&egrave;les sont proches entre les deux orgs sur cet objet.</li>
+  <li><strong>Double rattachement pour les associations</strong>&nbsp;: &agrave; l'impl&eacute;mentation migr&eacute;e via la table
+      de correspondance, et au contact migr&eacute; via <code>IdGlady__c</code>. Les deux lookups sont en
+      jointure interne&nbsp;: une association dont l'un des deux parents manque est &eacute;cart&eacute;e sans ligne de rejet.</li>
+  <li><strong>Aucun filtre de p&eacute;rim&egrave;tre explicite</strong> sur ces deux objets&nbsp;: ils sont born&eacute;s par leur
+      rattachement (page&nbsp;3, section&nbsp;3.7).</li>
+</ul>
+
+<p><strong>Limite.</strong> Le p&eacute;rim&egrave;tre des impl&eacute;mentations d&eacute;pend enti&egrave;rement de celui des opportunit&eacute;s.
+Les ~14&nbsp;000 opportunit&eacute;s exclues par le filtre de stades emportent avec elles leurs impl&eacute;mentations
+et les associations correspondantes &mdash; sans trace dans les fichiers de rejet.</p>
+
+<p><strong>En production.</strong> Contr&ocirc;ler le rapport entre le nombre d'impl&eacute;mentations extraites et
+ins&eacute;r&eacute;es. Un &eacute;cart important signale soit un p&eacute;rim&egrave;tre d'opportunit&eacute;s trop restrictif, soit un
+probl&egrave;me d'ordonnancement.</p>
+
+<h2>O8. Devis &mdash; changement de type d'objet</h2>
+
+<p><strong>Contexte.</strong> Le devis change de nature entre les deux orgs&nbsp;: objet standard c&ocirc;t&eacute; source,
+objet du module de configuration commerciale c&ocirc;t&eacute; destination. C'est le seul changement de type
+d'objet de la migration.</p>
+
+<p><strong>D&eacute;cisions (valid&eacute;es).</strong></p>
+
+<ul>
+  <li><strong>Triple rattachement</strong> &mdash; compte, opportunit&eacute; et contact principal, tous trois r&eacute;solus par
+      <code>IdGlady__c</code> en jointure interne. Un devis dont l'un des trois parents manque est &eacute;cart&eacute;.</li>
+  <li><strong>Report d'informations depuis les parents d&eacute;j&agrave; migr&eacute;s.</strong> Plusieurs champs du devis ne
+      viennent pas du devis source mais sont relus sur le compte et l'opportunit&eacute; <em>de destination</em>&nbsp;:
+      SIRET, code NAF, segment et identifiant de r&eacute;f&eacute;rence c&ocirc;t&eacute; compte&nbsp;; valeur faciale, dotation,
+      nombre de b&eacute;n&eacute;ficiaires et budget estim&eacute; c&ocirc;t&eacute; opportunit&eacute;. C'est pourquoi les requ&ecirc;tes de r&eacute;solution
+      d'Id correspondantes ram&egrave;nent des champs suppl&eacute;mentaires (page&nbsp;3, section&nbsp;3.8).</li>
+  <li><strong>Adresses de facturation et de livraison</strong> reprises &agrave; l'identique.</li>
+  <li><strong>Statut d'approbation</strong> traduit par le PicklistMapper.</li>
+</ul>
+
+<p><strong>Limite.</strong> Les <strong>lignes de devis ne sont pas migr&eacute;es</strong>. Les devis arrivent donc
+sans leur d&eacute;tail&nbsp;: montants ligne &agrave; ligne, produits, quantit&eacute;s et remises sont absents. C'est le
+principal reste &agrave; faire de la migration (page&nbsp;9).</p>
+
+<p><strong>En production.</strong> Traiter les lignes de devis avant la bascule, ou acter que les devis
+migr&eacute;s sont des ent&ecirc;tes documentaires sans valeur op&eacute;rationnelle. La d&eacute;pendance est stricte&nbsp;:
+les lignes ne peuvent &ecirc;tre migr&eacute;es qu'apr&egrave;s les devis, sur le m&ecirc;me principe de rattachement par
+<code>IdGlady__c</code>.</p>

@@ -1,0 +1,225 @@
+<h1>8. Guide de reprise (run book)</h1>
+
+<p>Marche &agrave; suivre op&eacute;rationnelle pour ex&eacute;cuter la migration. Cette page est faite pour &ecirc;tre ouverte
+<strong>pendant</strong> un run, pas seulement lue une fois.</p>
+
+<h2>8.1 Pr&eacute;requis dans l'org de destination</h2>
+
+<p>&Agrave; v&eacute;rifier une fois par environnement, avant le premier run. Un pr&eacute;requis manquant ne provoque pas
+d'erreur&nbsp;: il produit des donn&eacute;es incompl&egrave;tes.</p>
+
+<table>
+  <tr><th>#</th><th>Pr&eacute;requis</th><th>Comment v&eacute;rifier</th><th>Si absent</th></tr>
+  <tr><td>1</td><td><strong>Champ <code>IdGlady__c</code> d&eacute;ploy&eacute;</strong> sur tous les objets migr&eacute;s, en cl&eacute; externe unique</td>
+      <td>Setup &gt; Gestionnaire d'objets, objet par objet</td>
+      <td>Aucun rattachement possible&nbsp;: la cha&icirc;ne enti&egrave;re &eacute;choue</td></tr>
+  <tr><td>2</td><td><strong>Droits d'&eacute;criture au niveau du champ sur <code>IdGlady__c</code></strong> pour l'utilisateur d'int&eacute;gration</td>
+      <td>Profil ou Permission Set de l'utilisateur, objet par objet</td>
+      <td><strong>Le job r&eacute;ussit et les rattachements ne se font pas.</strong> Voir l'encadr&eacute; ci-dessous.</td></tr>
+  <tr><td>3</td><td><strong>Permission Set <code>Data Migration Users</code> assign&eacute;</strong> &agrave; l'utilisateur d'int&eacute;gration</td>
+      <td>Setup &gt; Utilisateurs &gt; Ensembles d'autorisations</td>
+      <td>Rejets massifs sur les r&egrave;gles de validation (~3&nbsp;700 sur les leads en recette)</td></tr>
+  <tr><td>4</td><td><strong>Permission <em>Set Audit Fields upon Record Creation</em></strong> active</td>
+      <td>Setup &gt; Param&egrave;tres d'interface utilisateur</td>
+      <td>Les dates de cr&eacute;ation d'origine sont silencieusement remplac&eacute;es par la date du run</td></tr>
+  <tr><td>5</td><td><strong>R&eacute;f&eacute;rentiel <code>Code_NAF__c</code> charg&eacute;</strong> (738 enregistrements)</td>
+      <td><code>SELECT COUNT() FROM Code_NAF__c</code></td>
+      <td>Aucun code NAF r&eacute;solu sur les leads</td></tr>
+  <tr><td>6</td><td><strong>Valeurs de listes de s&eacute;lection d&eacute;ploy&eacute;es</strong> &mdash; notamment les 17 valeurs ajout&eacute;es au jeu de valeurs des fonctions</td>
+      <td>Comparer avec le fichier d'audit d'un run pr&eacute;c&eacute;dent</td>
+      <td>Rejets <code>INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST</code></td></tr>
+  <tr><td>7</td><td><strong>Record types pr&eacute;sents</strong> avec les noms attendus (page&nbsp;3, section&nbsp;3.9)</td>
+      <td>Setup &gt; Gestionnaire d'objets &gt; Types d'enregistrement</td>
+      <td>Record type par d&eacute;faut appliqu&eacute;, sans erreur</td></tr>
+  <tr><td>8</td><td><strong>Comptes et contacts d&eacute;j&agrave; migr&eacute;s</strong></td>
+      <td><code>SELECT COUNT() FROM Account WHERE IdGlady__c != null</code></td>
+      <td>Le job Opportunit&eacute;s/Devis produit z&eacute;ro enregistrement, sans erreur</td></tr>
+</table>
+
+<div style="border-left:4px solid #a33; padding:8px 12px; margin:16px 0; background:#fdf3f3;">
+<strong>Incident v&eacute;cu &mdash; pr&eacute;requis n&deg;2.</strong> Lors d'une bascule vers un nouvel environnement, le champ
+<code>IdGlady__c</code> avait bien &eacute;t&eacute; d&eacute;ploy&eacute;, mais sans droits d'acc&egrave;s au niveau du champ pour
+l'utilisateur d'int&eacute;gration. Le champ &eacute;tant invisible pour cet utilisateur, Talend l'a purement et
+simplement retir&eacute; des sch&eacute;mas &agrave; la reconnexion&nbsp;: les cl&eacute;s externes ont disparu des mappings,
+et une partie du param&eacute;trage a d&ucirc; &ecirc;tre refaite. <strong>Toujours contr&ocirc;ler les droits d'acc&egrave;s aux champs
+avant de reconnecter les jobs &agrave; un nouvel environnement</strong>, et ne pas se contenter de v&eacute;rifier
+que les m&eacute;tadonn&eacute;es sont d&eacute;ploy&eacute;es.
+</div>
+
+<h2>8.2 Pr&eacute;requis sur le poste de travail</h2>
+
+<ol>
+  <li><strong>Talend Open Studio 8.0.1</strong> install&eacute;, projet import&eacute;.</li>
+  <li><strong>Routine <code>PicklistMapper</code></strong> pr&eacute;sente sous <em>Code &gt; Routines globales</em>.</li>
+  <li><strong>Fichier de correspondance des listes de s&eacute;lection</strong> pr&eacute;sent, en UTF-8, dans le r&eacute;pertoire
+      point&eacute; par <code>resource_dir</code>.</li>
+  <li><strong>Variables de contexte</strong> <code>output_dir</code> et <code>resource_dir</code> renseign&eacute;es
+      et pointant vers des r&eacute;pertoires existants et accessibles en &eacute;criture.</li>
+  <li><strong>Connexions Salesforce</strong> du r&eacute;f&eacute;rentiel &agrave; jour &mdash; voir la section&nbsp;8.8.</li>
+</ol>
+
+<h2>8.3 Check-list avant chaque run</h2>
+
+<p>&Agrave; d&eacute;rouler int&eacute;gralement, &agrave; chaque ex&eacute;cution r&eacute;elle. La plupart de ces points sont des r&eacute;sidus de
+mise au point qui n'apparaissent pas comme des erreurs.</p>
+
+<table>
+  <tr><th>&#9744;</th><th>V&eacute;rification</th><th>O&ugrave;</th></tr>
+  <tr><td>&#9744;</td><td>Aucun <code>LIMIT</code> dans les requ&ecirc;tes de p&eacute;rim&egrave;tre</td><td>Les 9 composants de la page&nbsp;3</td></tr>
+  <tr><td>&#9744;</td><td>Aucun filtre de test r&eacute;siduel &mdash; identifiant de compte en dur, restriction sur un champ pour d&eacute;bloquer un essai</td><td>Clauses <code>WHERE</code> des requ&ecirc;tes de p&eacute;rim&egrave;tre</td></tr>
+  <tr><td>&#9744;</td><td>Les requ&ecirc;tes de r&eacute;solution d'Id sont bien en <code>WHERE IdGlady__c != null</code>, et non restreintes &agrave; un enregistrement</td><td>Les 12 lookups</td></tr>
+  <tr><td>&#9744;</td><td><code>setDebug</code> d&eacute;sactiv&eacute;</td><td><code>tPrejob &gt; tJava_1</code> des deux jobs</td></tr>
+  <tr><td>&#9744;</td><td>Chaque champ mapp&eacute; dans un <code>tMap</code> est pr&eacute;sent dans le <code>SELECT</code> correspondant</td><td>Comparaison requ&ecirc;te / mapping, objet par objet</td></tr>
+  <tr><td>&#9744;</td><td>Les clauses des activit&eacute;s sont align&eacute;es sur celle de leur parent</td><td>Job Lead&nbsp;: <code>tSalesforceInput_1</code>, <code>_2</code> et <code>_5</code></td></tr>
+  <tr><td>&#9744;</td><td>Connexion cible pointant vers le bon environnement</td><td>R&eacute;f&eacute;rentiel &gt; M&eacute;tadonn&eacute;es &gt; Salesforce</td></tr>
+  <tr><td>&#9744;</td><td>Variables de contexte pointant vers le bon r&eacute;pertoire</td><td>Onglet Contexts</td></tr>
+  <tr><td>&#9744;</td><td>R&eacute;pertoire de sortie vid&eacute; ou archiv&eacute; &mdash; les fichiers du run pr&eacute;c&eacute;dent seront &eacute;cras&eacute;s</td><td><code>output_dir</code></td></tr>
+  <tr><td>&#9744;</td><td>Permission Set de migration assign&eacute; &agrave; l'utilisateur d'int&eacute;gration</td><td>Org de destination</td></tr>
+</table>
+
+<h2>8.4 Ordre de lancement</h2>
+
+<table>
+  <tr><th>#</th><th>Traitement</th><th>Attendre</th></tr>
+  <tr><td>1</td><td><strong>Job Comptes / Contacts / Plateformes</strong> <em>(hors p&eacute;rim&egrave;tre de ce document)</em></td>
+      <td>Fin compl&egrave;te. Contr&ocirc;ler que les comptes portent bien leur <code>IdGlady__c</code> avant de continuer.</td></tr>
+  <tr><td>2</td><td><code>MigrationPluxeeLead_v2</code></td><td>Fin compl&egrave;te, y compris les sous-jobs T&acirc;ches et &Eacute;v&eacute;nements.</td></tr>
+  <tr><td>3</td><td><code>MigrationPluxeeOppoDevis</code></td><td>Fin compl&egrave;te. Les 8 sous-jobs s'encha&icirc;nent automatiquement.</td></tr>
+</table>
+
+<p>Les deux jobs peuvent &ecirc;tre relanc&eacute;s ind&eacute;pendamment, mais jamais avant l'&eacute;tape&nbsp;1.
+Ne pas lancer les deux en parall&egrave;le&nbsp;: le job Opportunit&eacute;s/Devis lit des enregistrements que le job
+Lead peut &ecirc;tre en train de cr&eacute;er.</p>
+
+<h2>8.5 V&eacute;rifier qu'un run est correct &mdash; les quatre contr&ocirc;les</h2>
+
+<div style="border-left:4px solid #a33; padding:8px 12px; margin:16px 0; background:#fdf3f3;">
+<strong>Un compteur de succ&egrave;s &eacute;lev&eacute; ne prouve rien.</strong> Les trois m&eacute;canismes d&eacute;crits en page&nbsp;2
+produisent des donn&eacute;es incompl&egrave;tes sans erreur ni rejet. Les quatre contr&ocirc;les ci-dessous sont
+compl&eacute;mentaires&nbsp;: aucun ne remplace les autres.
+</div>
+
+<h3>Contr&ocirc;le 1 &mdash; les volumes extraits</h3>
+
+<p>Sur le sch&eacute;ma du job, lire le compteur en sortie de chaque requ&ecirc;te de p&eacute;rim&egrave;tre.
+Un volume nul ou tr&egrave;s inf&eacute;rieur &agrave; l'attendu d&eacute;signe un probl&egrave;me dans la clause <code>WHERE</code>,
+pas dans le mapping. C'est le contr&ocirc;le le plus rapide et celui qui &eacute;vite de chercher au mauvais endroit.</p>
+
+<h3>Contr&ocirc;le 2 &mdash; les fichiers de rejet</h3>
+
+<p>Ouvrir chaque fichier <code>..._ko.csv</code> et regrouper par <code>errorCode</code>.
+La typologie renseigne imm&eacute;diatement sur la nature du probl&egrave;me&nbsp;:</p>
+
+<table>
+  <tr><th>Code</th><th>Signification</th><th>Traitement</th></tr>
+  <tr><td><code>DUPLICATE_VALUE</code></td><td>Enregistrement d&eacute;j&agrave; migr&eacute;</td><td>Attendu sur un rejeu (page&nbsp;5, T8). Anormal sur un premier run.</td></tr>
+  <tr><td><code>FIELD_CUSTOM_VALIDATION_EXCEPTION</code></td><td>R&egrave;gle de validation de l'org de destination</td><td>V&eacute;rifier le Permission Set&nbsp;; sinon, arbitrage de mapping</td></tr>
+  <tr><td><code>INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST</code></td><td>Valeur absente du jeu de valeurs cible</td><td>Compl&eacute;ter le fichier de correspondance ou d&eacute;ployer la valeur manquante</td></tr>
+  <tr><td><code>STRING_TOO_LONG</code></td><td>D&eacute;passement de longueur</td><td>Nettoyage &agrave; la source&nbsp;; non couvert par le bypass</td></tr>
+  <tr><td><code>REQUIRED_FIELD_MISSING</code></td><td>Champ obligatoire non aliment&eacute;</td><td>V&eacute;rifier que le champ est bien dans le <code>SELECT</code></td></tr>
+  <tr><td><code>INSUFFICIENT_ACCESS</code></td><td>Droits insuffisants</td><td>Pr&eacute;requis n&deg;2 ou n&deg;3 de la section&nbsp;8.1</td></tr>
+</table>
+
+<h3>Contr&ocirc;le 3 &mdash; la coh&eacute;rence entre objets</h3>
+
+<p>Le contr&ocirc;le que rien d'autre ne fait. Les jointures internes &eacute;cartent les enregistrements orphelins
+<strong>sans les faire appara&icirc;tre dans les fichiers de rejet</strong> (page&nbsp;2). Seul l'&eacute;cart entre le volume
+extrait et le volume ins&eacute;r&eacute; les r&eacute;v&egrave;le.</p>
+
+<table>
+  <tr><th>Comparer</th><th>Alerte si</th><th>Cause probable</th></tr>
+  <tr><td>Leads extraits &rarr; leads ins&eacute;r&eacute;s + rejet&eacute;s</td><td>&Eacute;cart non nul</td><td>Anomalie de flux&nbsp;: tous les leads devraient aboutir dans l'un des deux fichiers</td></tr>
+  <tr><td>Activit&eacute;s extraites &rarr; activit&eacute;s ins&eacute;r&eacute;es</td><td>&Eacute;cart important</td><td>Leads parents non migr&eacute;s&nbsp;; clauses d&eacute;salign&eacute;es entre le parent et ses activit&eacute;s</td></tr>
+  <tr><td>Opportunit&eacute;s extraites &rarr; opportunit&eacute;s ins&eacute;r&eacute;es</td><td>&Eacute;cart important</td><td>Comptes manquants dans l'org de destination</td></tr>
+  <tr><td>Impl&eacute;mentations extraites &rarr; ins&eacute;r&eacute;es</td><td>&Eacute;cart important</td><td>Opportunit&eacute;s parentes hors p&eacute;rim&egrave;tre de stades</td></tr>
+  <tr><td>Devis extraits &rarr; ins&eacute;r&eacute;s</td><td>&Eacute;cart important</td><td>L'un des trois parents manque (compte, opportunit&eacute; ou contact)</td></tr>
+  <tr><td><strong>Un sous-job enfant &agrave; z&eacute;ro alors que le parent a produit</strong></td><td>Toujours</td><td>Table de correspondance vide, ou <code>IdGlady__c</code> non aliment&eacute;</td></tr>
+</table>
+
+<h3>Contr&ocirc;le 4 &mdash; le fichier d'audit du PicklistMapper</h3>
+
+<p>Ouvrir <code>picklist_unmapped.csv</code> apr&egrave;s chaque run.</p>
+
+<ul>
+  <li>Les lignes <code>unmapped</code> sont des valeurs sans correspondance&nbsp;: le champ est arriv&eacute; vide.
+      Chacune demande une d&eacute;cision &mdash; ajouter une correspondance, poser un d&eacute;faut, ou d&eacute;ployer la valeur cible.</li>
+  <li>Les lignes <code>defaut</code> sont &agrave; surveiller&nbsp;: un volume anormal signale souvent une valeur mal
+      orthographi&eacute;e dans le fichier de correspondance, ou un cas m&eacute;tier oubli&eacute;.</li>
+</ul>
+
+<p>Le r&eacute;sum&eacute; affich&eacute; en console en fin de job donne la m&ecirc;me information de mani&egrave;re condens&eacute;e, par champ.</p>
+
+<h3>Contr&ocirc;le compl&eacute;mentaire &mdash; les fichiers de donn&eacute;es</h3>
+
+<p>Les fichiers <code>...Data.csv</code> contiennent ce qui a &eacute;t&eacute; r&eacute;ellement envoy&eacute;, apr&egrave;s mapping.
+C'est le seul endroit o&ugrave; v&eacute;rifier qu'un champ donn&eacute; part bien avec la valeur attendue &mdash;
+utile pour confirmer une correspondance ou diagnostiquer une colonne enti&egrave;rement vide.</p>
+
+<h2>8.6 Traitement des rejets</h2>
+
+<table>
+  <tr><th>Nature du rejet</th><th>Qui traite</th><th>Comment</th></tr>
+  <tr><td>Valeur de liste sans correspondance</td><td>&Eacute;quipe de reprise</td><td>Compl&eacute;ter le fichier CSV, relancer</td></tr>
+  <tr><td>Valeur cible inexistante</td><td>&Eacute;quipe de reprise</td><td>D&eacute;ployer la valeur dans l'org de destination, puis relancer</td></tr>
+  <tr><td>Champ obligatoire non aliment&eacute;</td><td>&Eacute;quipe de reprise</td><td>V&eacute;rifier le <code>SELECT</code> et le mapping</td></tr>
+  <tr><td>R&egrave;gle de validation</td><td>&Eacute;quipe de reprise</td><td>V&eacute;rifier le Permission Set&nbsp;; sinon arbitrage &agrave; documenter</td></tr>
+  <tr><td><strong>Donn&eacute;e source incompl&egrave;te ou invalide</strong> &mdash; e-mail, t&eacute;l&eacute;phone, SIRET, code d'activit&eacute;, longueurs, doublons</td>
+      <td><strong>M&eacute;tier</strong></td>
+      <td>Extraire les lignes du fichier <code>_ko</code>, les transmettre pour nettoyage &agrave; la source. La colonne
+          <code>id_source</code> permet de retrouver chaque enregistrement.</td></tr>
+</table>
+
+<p>Les fichiers de rejet sont directement exploitables comme support d'&eacute;change&nbsp;: ils portent l'Id source,
+le champ en cause et le message d'erreur en clair. Voir page&nbsp;5, arbitrage T7.</p>
+
+<h2>8.7 Rejeu, rattrapage et jour de bascule</h2>
+
+<h3>Relancer apr&egrave;s correction</h3>
+
+<p>Les sorties &eacute;tant en insertion et non en mise &agrave; jour (page&nbsp;5, T8), relancer un job sur le m&ecirc;me
+p&eacute;rim&egrave;tre retente <strong>tous</strong> les enregistrements. Ceux d&eacute;j&agrave; migr&eacute;s repartent en
+<code>DUPLICATE_VALUE</code>&nbsp;: aucun doublon n'est cr&eacute;&eacute;, mais les fichiers de rejet deviennent
+difficiles &agrave; lire.</p>
+
+<p>Pour un rejeu propre apr&egrave;s correction de mapping, deux options&nbsp;: supprimer les enregistrements
+concern&eacute;s dans l'org de destination avant de relancer, ou restreindre temporairement le p&eacute;rim&egrave;tre
+de la requ&ecirc;te aux seuls enregistrements &agrave; reprendre.</p>
+
+<h3>Le jour de la bascule</h3>
+
+<p>Des enregistrements continueront d'&ecirc;tre cr&eacute;&eacute;s dans l'org source entre le dernier run complet et la
+mise en service. Un <strong>rattrapage est n&eacute;cessaire</strong>.</p>
+
+<ol>
+  <li>Identifier la date du dernier run complet.</li>
+  <li>Ajouter une clause de date sur <code>CreatedDate</code> dans les requ&ecirc;tes de p&eacute;rim&egrave;tre, pour ne
+      reprendre que les enregistrements post&eacute;rieurs.</li>
+  <li>Relancer les jobs dans l'ordre habituel &mdash; comptes d'abord.</li>
+  <li>Contr&ocirc;ler que les fichiers de rejet ne contiennent pas de <code>DUPLICATE_VALUE</code>&nbsp;:
+      leur pr&eacute;sence signale que la clause de date est mal born&eacute;e.</li>
+</ol>
+
+<p>Alternative structurelle&nbsp;: passer les sorties en mise &agrave; jour sur <code>IdGlady__c</code>,
+ce qui rend le rejeu idempotent. Modification simple mais qui change la s&eacute;mantique du run&nbsp;:
+&agrave; d&eacute;cider explicitement avant la bascule (page&nbsp;5, T8).</p>
+
+<h2>8.8 Passer d'un environnement &agrave; un autre</h2>
+
+<ol>
+  <li><strong>V&eacute;rifier les pr&eacute;requis</strong> de la section&nbsp;8.1 sur le nouvel environnement &mdash;
+      en particulier les droits d'acc&egrave;s au champ <code>IdGlady__c</code> (pr&eacute;requis n&deg;2).</li>
+  <li><strong>Modifier la connexion Salesforce existante</strong> dans le r&eacute;f&eacute;rentiel&nbsp;: changer l'identifiant
+      utilisateur, le mot de passe et le jeton de s&eacute;curit&eacute;. <strong>Ne pas cr&eacute;er une seconde connexion</strong>&nbsp;:
+      les 25&nbsp;composants Salesforce r&eacute;f&eacute;rencent la connexion existante et devraient sinon &ecirc;tre repoint&eacute;s un &agrave; un.</li>
+  <li><strong>Rouvrir un job</strong> et v&eacute;rifier qu'aucun sch&eacute;ma n'a &eacute;t&eacute; alt&eacute;r&eacute; par la reconnexion &mdash;
+      contr&ocirc;ler en particulier la pr&eacute;sence de <code>IdGlady__c</code> dans les mappings.</li>
+  <li><strong>V&eacute;rifier les trois noms de record types</strong> (page&nbsp;3, section&nbsp;3.9) dans le Setup du nouvel environnement.</li>
+  <li><strong>Ajuster les variables de contexte</strong> <code>output_dir</code> et <code>resource_dir</code>.</li>
+  <li><strong>Faire un run de test sur un p&eacute;rim&egrave;tre restreint</strong>, contr&ocirc;ler les quatre points de la
+      section&nbsp;8.5, puis <strong>retirer la restriction</strong> avant le run r&eacute;el.</li>
+</ol>
+
+<div style="border-left:4px solid #a33; padding:8px 12px; margin:16px 0; background:#fdf3f3;">
+<strong>Apr&egrave;s la migration de production</strong>, retirer le Permission Set de migration de l'utilisateur
+d'int&eacute;gration pour restaurer les contr&ocirc;les de saisie sur l'org.
+</div>
